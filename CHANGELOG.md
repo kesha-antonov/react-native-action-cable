@@ -17,6 +17,10 @@
 
 ## Changes
 
+### 1.1.3 (Nov 10, 2022)
+
+* `[FEATURE]`: Made build
+
 ### 1.1.2 (Nov 10, 2022)
 
 * `[BUGFIX]`: Fixes crash when received data is `null` [#7] (https://github.com/kesha-antonov/react-native-action-cable/issues/7)
