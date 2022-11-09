@@ -18,14 +18,14 @@ class ConnectionMonitor
       @startedAt = now()
       delete @stoppedAt
       @startPolling()
-      AppState.addEventListener("change", @visibilityDidChange)
+      @appStateEventListener = AppState.addEventListener("change", @visibilityDidChange)
       @log("ConnectionMonitor started. pollInterval = #{@getPollInterval()} ms")
 
   stop: =>
     if @isRunning()
       @stoppedAt = now()
       @stopPolling()
-      AppState.removeEventListener("change", @visibilityDidChange)
+      @appStateEventListener?.remove()
       @log("ConnectionMonitor stopped")
 
   isRunning: =>
