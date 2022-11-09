@@ -1,12 +1,16 @@
-module.exports =
-  module:
+module.exports = {
+  module: {
     loaders: [
       {
-        test: /\.coffee$/
+        test: /\.coffee$/,
         loaders: ['coffee']
       }
     ]
-  resolve:
+  },
+  resolve: {
     extensions: ['', '.coffee', '.js']
-  stats:
+  },
+  stats: {
     errorDetails: true
+  }
+}

@@ -24,18 +24,20 @@
   },
   "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
   "devDependencies": {
-    "coffee-loader": "^1.0.0",
+    "coffee-loader": "^4.0.0",
     "coffee-script": "^1.12.7",
-    "del": "^5.1.0",
+    "del": "^7.0.0",
     "gulp": "^4.0.2",
     "gulp-coffee": "^3.0.3",
-    "gulp-uglify-es": "^2.0.0",
-    "webpack-stream": "^5.2.1"
+    "gulp-uglify-es": "^3.0.0",
+    "webpack": "^5.75.0",
+    "webpack-stream": "^7.0.0"
   },
   "dependencies": {
-    "eventemitter3": "4.0.4"
+    "eventemitter3": "4.0.7"
   },
   "directories": {
     "lib": "lib"
-  }
+  },
+  "type": "module"
 }
