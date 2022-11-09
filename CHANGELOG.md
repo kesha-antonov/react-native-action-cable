@@ -17,6 +17,14 @@
 
 ## Changes
 
+### 1.1.2 (Nov 10, 2022)
+
+* `[BUGFIX]`: Fixes crash when received data is `null` [#7] (https://github.com/kesha-antonov/react-native-action-cable/issues/7)
+
+### 1.1.1 (Nov 10, 2022)
+
+* `[FEATURE]`: Updated deps
+
 ### 1.1.0 (July 2, 2020)
 
 * [BUGFIX] [#11] Fix Firefox error `Unhandled Rejection (TypeError): setting getter-only property "protocol"`.
