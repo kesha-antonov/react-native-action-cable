@@ -17,6 +17,10 @@
 
 ## Changes
 
+### 1.1.4 (Nov 10, 2022)
+
+* `[BUGFIX]`: Fixes deprecated usage of `AppState` [#14] (https://github.com/kesha-antonov/react-native-action-cable/issues/14)
+
 ### 1.1.3 (Nov 10, 2022)
 
 * `[FEATURE]`: Made build
