@@ -79,31 +79,48 @@ if (channel) {
 
 ```
 
-You can combine React's lifecycle hooks `componentDidMount` and `componentWillUnmount` to subscribe and unsubscribe from channels. Or implement custom logic in your `store`.
+You can combine React's lifecycle hook `useEffect` to subscribe and unsubscribe from channels. Or implement custom logic in your `store`.
 
 Here's example how you can handle events:
 
 ```javascript
-handleReceived = (data) => {
-  switch(data.type) {
+const [isWebsocketConnected, setIsWebsocketConnected] = useState(false)
+
+const onNewMessage = useCallback(message => {
+  // ... ADD TO MESSAGES LIST
+}, [])
+
+const handleReceived = useCallback(({ type, message }) => {
+  switch(type) {
     'new_incoming_message': {
-       this.onNewMessage(data.message)
+       onNewMessage(message)
     }
     ...
   }
-}
+}, [onNewMessage])
 
-handleConnected = () => {
-  if (this.state.isWebsocketConnected) return
+const handleConnected = useCallback(() => {
+  if (isWebsocketConnected) return
 
-  this.setState({ isWebsocketConnected: true })
-}
+  setIsWebsocketConnected(true)
+}, [isWebsocketConnected])
 
-handleDisconnected = () => {
-  if (!this.state.isWebsocketConnected) return
+const handleDisconnected = useCallback(() => {
+  if (!isWebsocketConnected) return
 
-  this.setState({ isWebsocketConnected: false })
-}
+  setIsWebsocketConnected(false)
+}, [isWebsocketConnected])
+
+useEffect(() => {
+  const channelName = 'name_of_channel'
+  const channel = cable.setChannel(channelName, ...)
+
+  return () => {
+    channel.removeListener( ... )
+    channel.unsubscribe()
+    delete( cable.channels[channelName] )
+  }
+}, [])
 ```
 
 Send message to Rails app:
