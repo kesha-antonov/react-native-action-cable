@@ -98,7 +98,7 @@ function Chat ({ chatId, userId }) {
       }
       ...
     }
-  }, [onNewMessage])
+  }, [])
 
   const handleConnected = useCallback(() => {
     setIsWebsocketConnected(true)
