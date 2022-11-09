@@ -84,43 +84,80 @@ You can combine React's lifecycle hook `useEffect` to subscribe and unsubscribe 
 Here's example how you can handle events:
 
 ```javascript
-const [isWebsocketConnected, setIsWebsocketConnected] = useState(false)
+function Chat ({ chatId, userId }) {
+  const [isWebsocketConnected, setIsWebsocketConnected] = useState(false)
 
-const onNewMessage = useCallback(message => {
-  // ... ADD TO MESSAGES LIST
-}, [])
+  const onNewMessage = useCallback(message => {
+    // ... ADD TO MESSAGES LIST
+  }, [])
 
-const handleReceived = useCallback(({ type, message }) => {
-  switch(type) {
-    'new_incoming_message': {
-       onNewMessage(message)
+  const handleReceived = useCallback(({ type, message }) => {
+    switch(type) {
+      'new_incoming_message': {
+         onNewMessage(message)
+      }
+      ...
     }
-    ...
-  }
-}, [onNewMessage])
+  }, [onNewMessage])
 
-const handleConnected = useCallback(() => {
-  if (isWebsocketConnected) return
+  const handleConnected = useCallback(() => {
+    setIsWebsocketConnected(true)
+  }, [])
 
-  setIsWebsocketConnected(true)
-}, [isWebsocketConnected])
+  const handleDisconnected = useCallback(() => {
+    setIsWebsocketConnected(false)
+  }, [])
 
-const handleDisconnected = useCallback(() => {
-  if (!isWebsocketConnected) return
+  const getChannelName = useCallback(() => {
+    return `chat_${chatId}_${userId}`
+  }, [chatId, userId])
 
-  setIsWebsocketConnected(false)
-}, [isWebsocketConnected])
+  const createChannel = useCallback(() => {
+    const channel = cable.setChannel(
+      getChannelName(), // channel name to which we will pass data from Rails app with `stream_from`
+      actionCable.subscriptions.create({
+        channel: 'ChatChannel', // from Rails app app/channels/chat_channel.rb
+        chatId,
+        otherParams...
+      })
+    )
 
-useEffect(() => {
-  const channelName = 'name_of_channel'
-  const channel = cable.setChannel(channelName, ...)
+    channel
+      .on( 'received', handleReceived )
+      .on( 'connected', handleConnected )
+      .on( 'disconnected', handleDisconnected )
+  }, [])
 
-  return () => {
-    channel.removeListener( ... )
+  const removeChannel = useCallback(() => {
+    const channelName = getChannelName()
+
+    const channel = cable.channel(channelName)
+    if (!channel)
+      return
+
+    channel
+      .removeListener( 'received', handleReceived )
+      .removeListener( 'connected', handleConnected )
+      .removeListener( 'disconnected', handleDisconnected )
     channel.unsubscribe()
     delete( cable.channels[channelName] )
-  }
-}, [])
+  }, [])
+
+  useEffect(() => {
+    createChannel()
+
+    return () => {
+      removeChannel()
+    }
+  }, [])
+
+  return (
+    <View>
+      // ... RENDER CHAT HERE
+    </View>
+  )
+}
+
 ```
 
 Send message to Rails app:
