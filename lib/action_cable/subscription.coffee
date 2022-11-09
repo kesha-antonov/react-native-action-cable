@@ -26,7 +26,7 @@ class Subscription extends EventEmitter
   rejected: =>
     @emit('rejected')
 
-  received: (data) =>
+  received: (data = {}) =>
     data.action = if data.action? then data.action else 'received'
     @emit(data.action, data)
 
