@@ -193,10 +193,19 @@ cable.channel('NotificationsChannel').perform('appear')
 `channel` methods:
 
 - **`.perform(action, data)`**  - send message to channel. action - `string`, data - `json`
-- **`.on(eventName, eventListener)`**  - subscribe to events. eventName can be `received`, `connected`, `rejected`, `disconnected`
 - **`.removeListener(eventName, eventListener)`**  - unsubscribe from event
 - **`.unsubscribe()`**  - unsubscribe from channel
+- **`.on(eventName, eventListener)`**  - subscribe to events. eventName can be `received`, `connected`, `rejected`, `disconnected` or value of `data.action` attribute from channel message payload.
 
+Custom action example:
+```rb
+{
+  "identifier": "{\"channel\":\"ChatChannel\",\"id\":42}",
+  "command": "message",
+  "data": "{\"action\":\"speak\",\"text\":\"hello!\"}"
+}
+```
+Above message will be emited with `eventName = 'speak'` 
 
 ## Contributing
 
