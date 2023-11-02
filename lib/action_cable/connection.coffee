@@ -26,7 +26,7 @@ class Connection
     else
       @log("Opening WebSocket, current state is #{@getState()}, subprotocols: #{protocols}")
       @uninstallEventHandlers() if @webSocket?
-      @webSocket = new @WebSocket(@consumer.url, protocols)
+      @webSocket = new @WebSocket(@consumer.url, protocols, {headers: @consumer.headers})
       @installEventHandlers()
       @monitor.start()
       true

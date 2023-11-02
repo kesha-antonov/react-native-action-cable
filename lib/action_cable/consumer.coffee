@@ -3,12 +3,17 @@ Subscriptions = require('./subscriptions').default
 
 
 class Consumer
-  constructor: (url, @log, @WebSocket) ->
+  constructor: (url, @log, @WebSocket, headers = {}) ->
     @subscriptions = new Subscriptions(@)
     @connection = new Connection(@, @log, @WebSocket)
 
     Object.defineProperty @, 'url', {
       get: () -> @createWebSocketURL(url),
+      configurable: yes
+    }
+
+    Object.defineProperty @, 'headers', {
+      value: headers,
       configurable: yes
     }
 
