@@ -172,7 +172,9 @@ cable.channel('NotificationsChannel').perform('appear')
 
 `ActionCable` top level methods:
 
-- **`.createConsumer(websocketUrl)`**  - create actionCable consumer and start connecting
+- **`.createConsumer(websocketUrl, headers = {})`**  - create actionCable consumer and start connecting.
+  - `websocketUrl` - url to your Rails app's `cable` endpoint
+  - `headers` - headers to send with connection request
 - **`.startDebugging()`**  - start logging
 - **`.stopDebugging()`**  - stop logging
 
@@ -205,7 +207,7 @@ Custom action example:
   "data": "{\"action\":\"speak\",\"text\":\"hello!\"}"
 }
 ```
-Above message will be emited with `eventName = 'speak'` 
+Above message will be emited with `eventName = 'speak'`
 
 ## Contributing
 
