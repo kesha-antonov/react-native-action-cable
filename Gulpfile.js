@@ -1,8 +1,8 @@
-import gulp from 'gulp'
-import { deleteAsync } from 'del'
-import ts from 'gulp-typescript'
-import uglifyES from 'gulp-uglify-es'
-import webpack from 'webpack-stream'
+const gulp = require('gulp')
+const { deleteAsync } = require('del')
+const ts = require('gulp-typescript')
+const uglifyES = require('gulp-uglify-es')
+const webpack = require('webpack-stream')
 
 const uglify = uglifyES.default
 
