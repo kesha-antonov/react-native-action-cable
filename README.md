@@ -74,6 +74,7 @@ channel
   .on( 'connected', this.handleConnected )
   .on( 'rejected', this.handleDisconnected )
   .on( 'disconnected', this.handleDisconnected )
+  .on( 'error', this.handleError )
 ```
 
 ...later we can remove event listeners and unsubscribe from channel:
@@ -87,6 +88,7 @@ if (channel) {
     .removeListener( 'connected', this.handleConnected )
     .removeListener( 'rejected', this.handleDisconnected )
     .removeListener( 'disconnected', this.handleDisconnected )
+    .removeListener( 'error', this.handleError )
   channel.unsubscribe()
   delete( cable.channels[channelName] )
 }
@@ -122,6 +124,11 @@ function Chat ({ chatId, userId }) {
     setIsWebsocketConnected(false)
   }, [])
 
+  const handleError = useCallback((error) => {
+    console.log('WebSocket error:', error)
+    setIsWebsocketConnected(false)
+  }, [])
+
   const getChannelName = useCallback(() => {
     return `chat_${chatId}_${userId}`
   }, [chatId, userId])
@@ -140,6 +147,7 @@ function Chat ({ chatId, userId }) {
       .on( 'received', handleReceived )
       .on( 'connected', handleConnected )
       .on( 'disconnected', handleDisconnected )
+      .on( 'error', handleError )
   }, [])
 
   const removeChannel = useCallback(() => {
@@ -153,6 +161,7 @@ function Chat ({ chatId, userId }) {
       .removeListener( 'received', handleReceived )
       .removeListener( 'connected', handleConnected )
       .removeListener( 'disconnected', handleDisconnected )
+      .removeListener( 'error', handleError )
     channel.unsubscribe()
     delete( cable.channels[channelName] )
   }, [])
@@ -273,7 +282,7 @@ The key point is that you need to obtain these identifiers through your app's no
 - **`.perform(action, data)`**  - send message to channel. action - `string`, data - `json`
 - **`.removeListener(eventName, eventListener)`**  - unsubscribe from event
 - **`.unsubscribe()`**  - unsubscribe from channel
-- **`.on(eventName, eventListener)`**  - subscribe to events. eventName can be `received`, `connected`, `rejected`, `disconnected` or value of `data.action` attribute from channel message payload.
+- **`.on(eventName, eventListener)`**  - subscribe to events. eventName can be `received`, `connected`, `rejected`, `disconnected`, `error` or value of `data.action` attribute from channel message payload.
 
 Custom action example:
 ```rb
@@ -284,6 +293,24 @@ Custom action example:
 }
 ```
 Above message will be emited with `eventName = 'speak'`
+
+## Connection Error Handling
+
+The library now supports listening to WebSocket connection errors. This is useful for handling scenarios such as:
+
+- No internet connection
+- Wrong host/URL
+- Server unavailable
+- Authentication failures
+
+```javascript
+channel.on('error', (error) => {
+  console.log('WebSocket connection error:', error);
+  // Handle error (show offline message, retry logic, etc.)
+});
+```
+
+The `error` event will be triggered when the underlying WebSocket connection encounters an error, allowing you to implement custom error handling logic in your application.
 
 ## Testing with Jest
 

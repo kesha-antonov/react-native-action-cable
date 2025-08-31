@@ -116,7 +116,8 @@ class Connection
       @monitor.recordDisconnect()
       @subscriptions.notifyAll("disconnected", {willAttemptReconnect: @monitor.isRunning()})
 
-    error: ->
+    error: (event) ->
       @log("WebSocket onerror event")
+      @subscriptions.notifyAll("error", event)
 
 export default Connection
