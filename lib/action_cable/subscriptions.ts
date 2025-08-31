@@ -1,5 +1,5 @@
-const INTERNAL = require('./internal').default;
-const Subscription = require('./subscription').default;
+import INTERNAL from './internal';
+import Subscription from './subscription';
 
 interface ChannelParams {
   channel: string;

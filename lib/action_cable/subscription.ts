@@ -1,4 +1,4 @@
-const EventEmitter = require('eventemitter3');
+import EventEmitter from 'eventemitter3';
 
 interface SubscriptionParams {
   [key: string]: any;

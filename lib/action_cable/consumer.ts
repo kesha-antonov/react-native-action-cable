@@ -1,5 +1,5 @@
-const Connection = require('./connection').default;
-const Subscriptions = require('./subscriptions').default;
+import Connection from './connection';
+import Subscriptions from './subscriptions';
 
 type LogFunction = (...args: any[]) => void;
 type WebSocketConstructor = any;

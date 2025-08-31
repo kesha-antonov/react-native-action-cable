@@ -1,5 +1,5 @@
-const Consumer = require('./consumer').default;
-const INTERNAL = require('./internal').default;
+import Consumer from './consumer';
+import INTERNAL from './internal';
 
 type LogFunction = (...args: any[]) => void;
 type HeadersProvider = (() => any) | any;

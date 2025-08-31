@@ -1,5 +1,5 @@
-const INTERNAL = require('./internal').default;
-const ConnectionMonitor = require('./connection_monitor').default;
+import INTERNAL from './internal';
+import ConnectionMonitor from './connection_monitor';
 
 const { message_types, protocols } = INTERNAL;
 

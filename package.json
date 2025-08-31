@@ -26,12 +26,13 @@
   },
   "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
   "devDependencies": {
-    "coffee-loader": "^5.0.0",
-    "coffeescript": "^2.7.0",
+    "@types/node": "^24.3.0",
     "del": "^7.1.0",
     "gulp": "^4.0.2",
-    "gulp-coffee": "^3.0.3",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-uglify-es": "^3.0.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.2",
     "webpack": "^5.90.3",
     "webpack-stream": "^7.0.0"
   },

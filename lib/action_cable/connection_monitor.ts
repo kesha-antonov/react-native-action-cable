@@ -1,3 +1,5 @@
+// Conditional import of react-native AppState
+// We use require here because react-native may not be available in all environments
 let AppState: any;
 try {
   const { AppState: RNAppState } = require('react-native');
