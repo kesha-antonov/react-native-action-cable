@@ -37,6 +37,20 @@ Create your consumer:
 const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable')
 ```
 
+You can also pass headers as a function for dynamic authentication:
+
+```javascript
+// Static headers
+const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable', {
+  'Authorization': 'Bearer token123'
+})
+
+// Dynamic headers (function that returns headers object)
+const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable', () => ({
+  'Authorization': `Bearer ${getCurrentAuthToken()}`
+}))
+```
+
 Right after that create Cable instance. It'll hold info of our channels.
 
 ```javascript
@@ -173,8 +187,8 @@ cable.channel('NotificationsChannel').perform('appear')
 `ActionCable` top level methods:
 
 - **`.createConsumer(websocketUrl, headers = {})`**  - create actionCable consumer and start connecting.
-  - `websocketUrl` - url to your Rails app's `cable` endpoint
-  - `headers` - headers to send with connection request
+  - `websocketUrl` - url to your Rails app's `cable` endpoint (can be a string or a function that returns a string)
+  - `headers` - headers to send with connection request (can be an object or a function that returns an object)
 - **`.startDebugging()`**  - start logging
 - **`.stopDebugging()`**  - stop logging
 
