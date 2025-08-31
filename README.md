@@ -260,6 +260,12 @@ The key point is that you need to obtain these identifiers through your app's no
 - **`.createConsumer(websocketUrl, headers = {})`**  - create actionCable consumer and start connecting.
   - `websocketUrl` - url to your Rails app's `cable` endpoint (can be a string or a function that returns a string)
   - `headers` - headers to send with connection request (can be an object or a function that returns an object)
+- **`.getOrCreateConsumer(websocketUrl, headers = {})`**  - get existing consumer or create a new one. Prevents multiple connections to the same URL.
+  - Returns existing active consumer if available, otherwise creates a new one
+  - Automatically cleans up disconnected consumers
+  - Useful for preventing duplicate connections during app restarts or hot reloads
+- **`.disconnectConsumer(websocketUrl, headers = {})`**  - disconnect and remove a specific consumer from cache.
+  - Returns `true` if consumer was found and disconnected, `false` otherwise
 - **`.startDebugging()`**  - start logging
 - **`.stopDebugging()`**  - stop logging
 
@@ -293,6 +299,71 @@ Custom action example:
 }
 ```
 Above message will be emited with `eventName = 'speak'`
+
+## Preventing Multiple Connections
+
+When developing React Native apps, you may encounter duplicate ActionCable connections during:
+- Hot reloads/Fast Refresh
+- App restarts
+- Component remounting
+
+This can cause multiple event listeners and duplicate message handling. To prevent this:
+
+### Use `getOrCreateConsumer` instead of `createConsumer`
+
+```javascript
+// ❌ This creates a new connection every time
+const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable');
+
+// ✅ This reuses existing connections
+const actionCable = ActionCable.getOrCreateConsumer('ws://localhost:3000/cable');
+```
+
+### Implement proper cleanup
+
+```javascript
+// In your component
+class MyComponent extends Component {
+  componentDidMount() {
+    this.setupActionCable();
+  }
+  
+  componentWillUnmount() {
+    this.cleanupActionCable();
+  }
+  
+  setupActionCable() {
+    // This will reuse existing connection if available
+    this.consumer = ActionCable.getOrCreateConsumer('ws://localhost:3000/cable');
+    // ... setup channels
+  }
+  
+  cleanupActionCable() {
+    if (this.channel) {
+      this.channel.removeListener('received', this.handleReceived);
+      this.channel.unsubscribe();
+    }
+  }
+}
+```
+
+### Check connection status
+
+```javascript
+// Check if consumer is active before creating subscriptions
+if (actionCable.connection.isActive()) {
+  console.log('Already connected');
+} else {
+  console.log('Not connected');
+}
+```
+
+### Manual consumer cleanup
+
+```javascript
+// Disconnect and remove a specific consumer from cache
+ActionCable.disconnectConsumer('ws://localhost:3000/cable');
+```
 
 ## Connection Error Handling
 
