@@ -1,14 +1,15 @@
 module.exports = {
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.coffee$/,
-        loaders: ['coffee']
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
       }
     ]
   },
   resolve: {
-    extensions: ['', '.coffee', '.js']
+    extensions: ['.ts', '.js']
   },
   stats: {
     errorDetails: true
