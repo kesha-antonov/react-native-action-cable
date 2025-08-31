@@ -182,6 +182,68 @@ cable.channel(channelName).perform('send_message', { text: 'Hey' })
 cable.channel('NotificationsChannel').perform('appear')
 ```
 
+## Obtaining chatId and userId
+
+You might wonder: "Where do `chatId` and `userId` come from?" These are values that your React Native app needs to obtain before creating the ActionCable subscription. Here are the most common approaches:
+
+### 1. From Navigation/Route Parameters
+```javascript
+// Using React Navigation
+function ChatScreen({ route }) {
+  const { chatId, userId } = route.params;
+  // Now use chatId and userId for your subscription
+}
+```
+
+### 2. From API Calls
+```javascript
+function Chat() {
+  const [chatId, setChatId] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    // Fetch chat and user data from your API
+    const fetchChatData = async () => {
+      const response = await fetch('/api/current-chat');
+      const data = await response.json();
+      setChatId(data.chatId);
+      setUserId(data.userId);
+    };
+    
+    fetchChatData();
+  }, []);
+
+  // Only create subscription once we have the required data
+  useEffect(() => {
+    if (chatId && userId) {
+      // Create your ActionCable subscription here
+    }
+  }, [chatId, userId]);
+}
+```
+
+### 3. From Authentication Context
+```javascript
+function Chat({ chatId }) {
+  const { currentUser } = useAuth(); // From your auth provider
+  const userId = currentUser?.id;
+
+  // Use chatId (from props/navigation) and userId (from auth context)
+}
+```
+
+### 4. From Global State (Redux/Context)
+```javascript
+function Chat() {
+  const chatId = useSelector(state => state.chat.currentChatId);
+  const userId = useSelector(state => state.auth.userId);
+
+  // Use values from your global state
+}
+```
+
+The key point is that you need to obtain these identifiers through your app's normal data flow (API calls, navigation, authentication, etc.) before creating the ActionCable subscription.
+
 ## Methods
 
 `ActionCable` top level methods:
