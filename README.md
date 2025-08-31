@@ -18,6 +18,10 @@ The `react-native-action-cable` package exposes two modules: ActionCable, Cable.
 
 ```yarn add @kesha-antonov/react-native-action-cable```
 
+## React Native Compatibility
+
+This library is fully compatible with React Native environments. It automatically detects the available WebSocket implementation and works without requiring `window` object polyfills.
+
 ## Usage
 
 Import:
