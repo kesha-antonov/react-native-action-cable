@@ -209,6 +209,86 @@ Custom action example:
 ```
 Above message will be emited with `eventName = 'speak'`
 
+## Testing with Jest
+
+This library can be easily mocked for Jest tests. Here are several approaches:
+
+### Quick Setup
+
+For most use cases, you can use this comprehensive mock:
+
+```javascript
+jest.mock('@kesha-antonov/react-native-action-cable', () => {
+  const createMockSubscription = () => ({
+    on: jest.fn().mockReturnThis(),
+    removeListener: jest.fn().mockReturnThis(),
+    perform: jest.fn(),
+    unsubscribe: jest.fn(),
+  });
+
+  const createMockConsumer = () => ({
+    subscriptions: {
+      create: jest.fn().mockImplementation(() => createMockSubscription()),
+    },
+    connection: {
+      isActive: jest.fn().mockReturnValue(true),
+      isOpen: jest.fn().mockReturnValue(true),
+    },
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+  });
+
+  return {
+    ActionCable: {
+      createConsumer: jest.fn().mockImplementation(() => createMockConsumer()),
+      startDebugging: jest.fn(),
+      stopDebugging: jest.fn(),
+      log: jest.fn(),
+    },
+    Cable: jest.fn().mockImplementation(() => ({
+      channels: {},
+      channel: jest.fn(),
+      setChannel: jest.fn(),
+    })),
+  };
+});
+```
+
+### Testing Examples
+
+```javascript
+// Test component that uses ActionCable
+it('should create consumer and subscription', () => {
+  render(<YourComponent />);
+  
+  expect(ActionCable.createConsumer).toHaveBeenCalledWith('ws://localhost:3000/cable');
+});
+
+it('should handle received messages', () => {
+  const { getByText } = render(<YourComponent />);
+  
+  // Get the mock subscription
+  const mockSubscription = ActionCable.createConsumer().subscriptions.create();
+  
+  // Simulate receiving a message
+  const receivedHandler = mockSubscription.on.mock.calls
+    .find(call => call[0] === 'received')[1];
+  receivedHandler({ type: 'new_message', message: 'Hello' });
+  
+  expect(getByText('Hello')).toBeTruthy();
+});
+```
+
+### Complete Examples
+
+For comprehensive examples including:
+- Full Jest setup files
+- Example components and tests  
+- Common testing patterns
+- Troubleshooting guide
+
+Check the [`examples/testing`](examples/testing) directory in this repository.
+
 ## Contributing
 
 1. Fork it ( https://github.com/kesha-antonov/react-native-action-cable/fork )
