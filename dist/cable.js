@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0});class Cable{constructor(e={}){this.channel=e=>this.channels[e],this.setChannel=(e,s)=>(this.channels[e]=s,s),this.channels=e}}exports.default=Cable;
