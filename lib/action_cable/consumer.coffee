@@ -13,7 +13,7 @@ class Consumer
     }
 
     Object.defineProperty @, 'headers', {
-      value: headers,
+      get: () -> @createHeaders(headers),
       configurable: yes
     }
 
@@ -37,5 +37,8 @@ class Consumer
       url = url.replace('http', 'ws')
 
     url
+
+  createHeaders: (headers) ->
+    headers?() ? headers
 
 export default Consumer
