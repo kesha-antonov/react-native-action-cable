@@ -6,5 +6,6 @@ class Cable
 
   setChannel: (name, channel) =>
     @channels[name] = channel
+    channel
 
 export default Cable
