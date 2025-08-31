@@ -303,6 +303,18 @@ For comprehensive examples including:
 
 Check the [`examples/testing`](examples/testing) directory in this repository.
 
+## Apollo GraphQL Integration
+
+For using ActionCable with GraphQL subscriptions and Apollo Client, see the complete integration example:
+
+**[Apollo GraphQL Example](examples/apollo-graphql)**
+
+This example shows how to:
+- Set up Apollo Client with ActionCable for GraphQL subscriptions
+- Use the adapted ActionCableLink for seamless integration
+- Handle real-time GraphQL subscriptions in React Native
+- Configure Rails backend for GraphQL over ActionCable
+
 ## Contributing
 
 1. Fork it ( https://github.com/kesha-antonov/react-native-action-cable/fork )
