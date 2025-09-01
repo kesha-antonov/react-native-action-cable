@@ -22,12 +22,8 @@ export interface Connection {
 export type LogFunction = (...args: any[]) => void
 
 class ConnectionMonitor {
-  static readonly pollInterval = {
-    min: 3,
-    max: 30
-  }
-
   static readonly staleThreshold = 6 // Server::Connections::BEAT_INTERVAL * 2 (missed two pings)
+  static readonly reconnectionBackoffRate = 0.15
 
   connection: Connection
   log: LogFunction
@@ -67,13 +63,16 @@ class ConnectionMonitor {
     return this.startedAt != null && this.stoppedAt == null
   }
 
-  recordPing = (): void => {
+  recordMessage = (): void => {
     this.pingedAt = now()
+  }
+
+  recordPing = (): void => {
+    this.recordMessage()
   }
 
   recordConnect = (): void => {
     this.reconnectAttempts = 0
-    this.recordPing()
     delete this.disconnectedAt
     this.log("ConnectionMonitor recorded connect")
   }
@@ -104,17 +103,19 @@ class ConnectionMonitor {
   }
 
   getPollInterval = (): number => {
-    const { min, max } = ConnectionMonitor.pollInterval
-    const interval = 5 * Math.log(this.reconnectAttempts + 1)
-    return Math.round(clamp(interval, min, max) * 1000)
+    const { staleThreshold, reconnectionBackoffRate } = ConnectionMonitor
+    const backoff = Math.pow(1 + reconnectionBackoffRate, Math.min(this.reconnectAttempts, 10))
+    const jitterMax = this.reconnectAttempts === 0 ? 1 : reconnectionBackoffRate
+    const jitter = jitterMax * Math.random()
+    return staleThreshold * 1000 * backoff * (1 + jitter)
   }
 
   reconnectIfStale = (): void => {
     if (this.connectionIsStale()) {
-      this.log(`ConnectionMonitor detected stale connection. reconnectAttempts = ${this.reconnectAttempts}, pollInterval = ${this.getPollInterval()} ms, time disconnected = ${secondsSince(this.disconnectedAt)} s, stale threshold = ${ConnectionMonitor.staleThreshold} s`)
+      this.log(`ConnectionMonitor detected stale connection. reconnectAttempts = ${this.reconnectAttempts}, time stale = ${secondsSince(this.refreshedAt)} s, stale threshold = ${ConnectionMonitor.staleThreshold} s`)
       this.reconnectAttempts++
       if (this.disconnectedRecently()) {
-        this.log("ConnectionMonitor skipping reopening recent disconnect")
+        this.log(`ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(this.disconnectedAt)} s`)
       } else {
         this.log("ConnectionMonitor reopening")
         this.connection.reopen()
@@ -122,8 +123,12 @@ class ConnectionMonitor {
     }
   }
 
+  get refreshedAt(): number | undefined {
+    return this.pingedAt ?? this.startedAt
+  }
+
   connectionIsStale = (): boolean => {
-    return secondsSince(this.pingedAt ?? this.startedAt) > ConnectionMonitor.staleThreshold
+    return secondsSince(this.refreshedAt) > ConnectionMonitor.staleThreshold
   }
 
   disconnectedRecently = (): boolean => {
@@ -149,10 +154,6 @@ function now(): number {
 function secondsSince(time?: number): number {
   if (time == null) return Infinity
   return (now() - time) / 1000
-}
-
-function clamp(number: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, number))
 }
 
 export default ConnectionMonitor

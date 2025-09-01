@@ -13,6 +13,7 @@ export interface Consumer {
     notify(identifier: string, callbackName: string, ...args: any[]): void
     reject(identifier: string): void
     notifyAll(callbackName: string, ...args: any[]): void
+    confirmSubscription?(identifier: string): void
   }
 }
 
@@ -29,6 +30,7 @@ class Connection {
   subscriptions: Consumer['subscriptions']
   monitor: ConnectionMonitor
   disconnected: boolean = true
+  reconnectAttempted: boolean = false
   webSocket?: any
 
   constructor(consumer: Consumer, log: LogFunction, WebSocketClass: WebSocketConstructor) {
@@ -101,6 +103,10 @@ class Connection {
     return this.isState("open", "connecting")
   }
 
+  triedToReconnect = (): boolean => {
+    return this.monitor.reconnectAttempts > 0
+  }
+
   // Private
 
   isProtocolSupported = (): boolean => {
@@ -146,21 +152,37 @@ class Connection {
         return
       }
 
-      const { identifier, message, type } = JSON.parse(event.data)
+      const { identifier, message, reason, reconnect, type } = JSON.parse(event.data)
       if (event.data.close) {
         event.data.close()
       }
 
+      this.monitor.recordMessage()
+
       switch (type) {
         case message_types.welcome:
+          if (this.triedToReconnect()) {
+            this.reconnectAttempted = true
+          }
           this.monitor.recordConnect()
           this.subscriptions.reload()
           break
+        case message_types.disconnect:
+          this.log(`Disconnecting. Reason: ${reason}`)
+          this.close({ allowReconnect: reconnect })
+          break
         case message_types.ping:
-          this.monitor.recordPing()
           break
         case message_types.confirmation:
-          this.subscriptions.notify(identifier, "connected")
+          if (typeof this.subscriptions.confirmSubscription === 'function') {
+            this.subscriptions.confirmSubscription(identifier)
+          }
+          if (this.reconnectAttempted) {
+            this.reconnectAttempted = false
+            this.subscriptions.notify(identifier, "connected", { reconnected: true })
+          } else {
+            this.subscriptions.notify(identifier, "connected", { reconnected: false })
+          }
           break
         case message_types.rejection:
           this.subscriptions.reject(identifier)
