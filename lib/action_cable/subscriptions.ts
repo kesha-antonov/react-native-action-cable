@@ -99,6 +99,11 @@ class Subscriptions {
     const { identifier } = subscription
     this.consumer.send({ command, identifier })
   }
+
+  confirmSubscription = (identifier: string): void => {
+    // In Rails 8, this method logs subscription confirmation
+    // We skip logging here to maintain compatibility with existing interface
+  }
 }
 
 export default Subscriptions
