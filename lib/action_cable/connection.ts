@@ -1,59 +1,45 @@
-const INTERNAL = require('./internal')
-const ConnectionMonitor = require('./connection_monitor')
+import INTERNAL from './internal'
+import ConnectionMonitor from './connection_monitor'
 
 const { message_types, protocols } = INTERNAL
 
 const [supportedProtocols, unsupportedProtocol] = protocols.slice(0, -1).concat([protocols[protocols.length - 1]])
 
-/**
- * @typedef {Object} Consumer
- * @property {string} url
- * @property {any} headers
- * @property {Object} subscriptions
- * @property {function(): void} subscriptions.reload
- * @property {function(string, string, ...any): void} subscriptions.notify
- * @property {function(string): void} subscriptions.reject
- * @property {function(string, ...any): void} subscriptions.notifyAll
- */
+export interface Consumer {
+  url: string
+  headers: any
+  subscriptions: {
+    reload(): void
+    notify(identifier: string, callbackName: string, ...args: any[]): void
+    reject(identifier: string): void
+    notifyAll(callbackName: string, ...args: any[]): void
+  }
+}
 
-/**
- * @typedef {function(...any): void} LogFunction
- */
+export type LogFunction = (...args: any[]) => void
 
-/**
- * @typedef {any} WebSocketConstructor
- */
+export type WebSocketConstructor = any
 
 class Connection {
-  static reopenDelay = 500
+  static readonly reopenDelay = 500
 
-  /**
-   * @param {Consumer} consumer
-   * @param {LogFunction} log
-   * @param {WebSocketConstructor} WebSocketClass
-   */
-  constructor(consumer, log, WebSocketClass) {
-    /** @type {Consumer} */
+  consumer: Consumer
+  log: LogFunction
+  WebSocket: WebSocketConstructor
+  subscriptions: Consumer['subscriptions']
+  monitor: ConnectionMonitor
+  disconnected: boolean = true
+  webSocket?: any
+
+  constructor(consumer: Consumer, log: LogFunction, WebSocketClass: WebSocketConstructor) {
     this.consumer = consumer
-    /** @type {LogFunction} */
     this.log = log
-    /** @type {WebSocketConstructor} */
     this.WebSocket = WebSocketClass
-    /** @type {Consumer['subscriptions']} */
     this.subscriptions = consumer.subscriptions
-    /** @type {any} */
     this.monitor = new ConnectionMonitor(this, log)
-    /** @type {boolean} */
-    this.disconnected = true
-    /** @type {any} */
-    this.webSocket = undefined
   }
 
-  /**
-   * @param {any} data
-   * @returns {boolean}
-   */
-  send = (data) => {
+  send = (data: any): boolean => {
     if (this.isOpen()) {
       this.webSocket.send(JSON.stringify(data))
       return true
@@ -62,10 +48,7 @@ class Connection {
     }
   }
 
-  /**
-   * @returns {boolean}
-   */
-  open = () => {
+  open = (): boolean => {
     if (this.isActive()) {
       this.log(`Attempted to open WebSocket, but existing socket is ${this.getState()}`)
       return false
@@ -81,11 +64,7 @@ class Connection {
     }
   }
 
-  /**
-   * @param {Object} options
-   * @param {boolean} options.allowReconnect
-   */
-  close = ({ allowReconnect = true } = {}) => {
+  close = ({ allowReconnect = true }: { allowReconnect?: boolean } = {}): void => {
     if (!allowReconnect) {
       this.monitor.stop()
     }
@@ -94,7 +73,7 @@ class Connection {
     }
   }
 
-  reopen = () => {
+  reopen = (): void => {
     this.log(`Reopening WebSocket, current state is ${this.getState()}`)
     if (this.isActive()) {
       try {
@@ -110,50 +89,33 @@ class Connection {
     }
   }
 
-  /**
-   * @returns {any}
-   */
-  getProtocol = () => {
+  getProtocol = (): any => {
     return this.webSocket?.protocol
   }
 
-  /**
-   * @returns {boolean}
-   */
-  isOpen = () => {
+  isOpen = (): boolean => {
     return this.isState("open")
   }
 
-  /**
-   * @returns {boolean}
-   */
-  isActive = () => {
+  isActive = (): boolean => {
     return this.isState("open", "connecting")
   }
 
   // Private
 
-  /**
-   * @returns {boolean}
-   */
-  isProtocolSupported = () => {
-    return supportedProtocols.includes(this.getProtocol())
+  isProtocolSupported = (): boolean => {
+    return supportedProtocols.indexOf(this.getProtocol()) !== -1
   }
 
-  /**
-   * @param {...string} states
-   * @returns {boolean}
-   */
-  isState = (...states) => {
-    return states.includes(this.getState())
+  isState = (...states: string[]): boolean => {
+    return states.indexOf(this.getState()) !== -1
   }
 
-  /**
-   * @returns {string | null}
-   */
-  getState = () => {
+  getState = (): string | null => {
     if (this.webSocket?.readyState != null) {
-      for (const [state, value] of Object.entries((globalThis).WebSocket || {})) {
+      const ws = (globalThis as any).WebSocket || {}
+      const entries = Object.keys(ws).map(key => [key, ws[key]])
+      for (const [state, value] of entries) {
         if (value === this.webSocket.readyState) {
           return state.toLowerCase()
         }
@@ -162,24 +124,21 @@ class Connection {
     return null
   }
 
-  installEventHandlers = () => {
+  installEventHandlers = (): void => {
     for (const eventName of Object.keys(this.events)) {
-      const handler = this.events[eventName].bind(this)
+      const handler = (this.events as any)[eventName].bind(this)
       this.webSocket[`on${eventName}`] = handler
     }
   }
 
-  uninstallEventHandlers = () => {
+  uninstallEventHandlers = (): void => {
     for (const eventName of Object.keys(this.events)) {
       this.webSocket[`on${eventName}`] = () => {}
     }
   }
 
   events = {
-    /**
-     * @param {any} event
-     */
-    message: (event) => {
+    message: (event: any): void => {
       if (!this.isProtocolSupported()) {
         if (event.data.close) {
           event.data.close()
@@ -211,7 +170,7 @@ class Connection {
       }
     },
 
-    open: () => {
+    open: (): void => {
       this.log(`WebSocket onopen event, using '${this.getProtocol()}' subprotocol`)
       this.disconnected = false
       if (!this.isProtocolSupported()) {
@@ -220,10 +179,7 @@ class Connection {
       }
     },
 
-    /**
-     * @param {any} event
-     */
-    close: (event) => {
+    close: (event: any): void => {
       this.log("WebSocket onclose event")
       if (this.disconnected) return
       this.disconnected = true
@@ -231,14 +187,11 @@ class Connection {
       this.subscriptions.notifyAll("disconnected", { willAttemptReconnect: this.monitor.isRunning() })
     },
 
-    /**
-     * @param {any} event
-     */
-    error: (event) => {
+    error: (event: any): void => {
       this.log("WebSocket onerror event")
       this.subscriptions.notifyAll("error", event)
     }
   }
 }
 
-module.exports = Connection
+export default Connection

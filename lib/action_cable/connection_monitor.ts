@@ -1,8 +1,8 @@
 // Conditional import of react-native AppState
 // We use require here because react-native may not be available in all environments
-let AppState
+let AppState: any
 try {
-  const { AppState: RNAppState } = require('react-native')
+  const { AppState: RNAppState } = eval('require')('react-native')
   AppState = RNAppState
 } catch {
   // React Native not available, use mock
@@ -14,50 +14,37 @@ try {
 
 const APP_STATE_ACTIVE = 'active'
 
-/**
- * @typedef {Object} Connection
- * @property {function(): void} reopen
- * @property {function(): boolean} isOpen
- */
+export interface Connection {
+  reopen(): void
+  isOpen(): boolean
+}
 
-/**
- * @typedef {function(...any): void} LogFunction
- */
+export type LogFunction = (...args: any[]) => void
 
 class ConnectionMonitor {
-  static pollInterval = {
+  static readonly pollInterval = {
     min: 3,
     max: 30
   }
 
-  static staleThreshold = 6 // Server::Connections::BEAT_INTERVAL * 2 (missed two pings)
+  static readonly staleThreshold = 6 // Server::Connections::BEAT_INTERVAL * 2 (missed two pings)
 
-  /**
-   * @param {Connection} connection
-   * @param {LogFunction} log
-   */
-  constructor(connection, log) {
-    /** @type {Connection} */
+  connection: Connection
+  log: LogFunction
+  reconnectAttempts: number = 0
+  startedAt?: number
+  stoppedAt?: number
+  pingedAt?: number
+  disconnectedAt?: number
+  pollTimeout?: any
+  appStateEventListener?: any
+
+  constructor(connection: Connection, log: LogFunction) {
     this.connection = connection
-    /** @type {LogFunction} */
     this.log = log
-    /** @type {number} */
-    this.reconnectAttempts = 0
-    /** @type {number | undefined} */
-    this.startedAt = undefined
-    /** @type {number | undefined} */
-    this.stoppedAt = undefined
-    /** @type {number | undefined} */
-    this.pingedAt = undefined
-    /** @type {number | undefined} */
-    this.disconnectedAt = undefined
-    /** @type {NodeJS.Timeout | undefined} */
-    this.pollTimeout = undefined
-    /** @type {any} */
-    this.appStateEventListener = undefined
   }
 
-  start = () => {
+  start = (): void => {
     if (!this.isRunning()) {
       this.startedAt = now()
       delete this.stoppedAt
@@ -67,7 +54,7 @@ class ConnectionMonitor {
     }
   }
 
-  stop = () => {
+  stop = (): void => {
     if (this.isRunning()) {
       this.stoppedAt = now()
       this.stopPolling()
@@ -76,53 +63,53 @@ class ConnectionMonitor {
     }
   }
 
-  isRunning = () => {
+  isRunning = (): boolean => {
     return this.startedAt != null && this.stoppedAt == null
   }
 
-  recordPing = () => {
+  recordPing = (): void => {
     this.pingedAt = now()
   }
 
-  recordConnect = () => {
+  recordConnect = (): void => {
     this.reconnectAttempts = 0
     this.recordPing()
     delete this.disconnectedAt
     this.log("ConnectionMonitor recorded connect")
   }
 
-  recordDisconnect = () => {
+  recordDisconnect = (): void => {
     this.disconnectedAt = now()
     this.log("ConnectionMonitor recorded disconnect")
   }
 
   // Private
 
-  startPolling = () => {
+  startPolling = (): void => {
     this.stopPolling()
     this.poll()
   }
 
-  stopPolling = () => {
+  stopPolling = (): void => {
     if (this.pollTimeout) {
       clearTimeout(this.pollTimeout)
     }
   }
 
-  poll = () => {
+  poll = (): void => {
     this.pollTimeout = setTimeout(() => {
       this.reconnectIfStale()
       this.poll()
     }, this.getPollInterval())
   }
 
-  getPollInterval = () => {
+  getPollInterval = (): number => {
     const { min, max } = ConnectionMonitor.pollInterval
     const interval = 5 * Math.log(this.reconnectAttempts + 1)
     return Math.round(clamp(interval, min, max) * 1000)
   }
 
-  reconnectIfStale = () => {
+  reconnectIfStale = (): void => {
     if (this.connectionIsStale()) {
       this.log(`ConnectionMonitor detected stale connection. reconnectAttempts = ${this.reconnectAttempts}, pollInterval = ${this.getPollInterval()} ms, time disconnected = ${secondsSince(this.disconnectedAt)} s, stale threshold = ${ConnectionMonitor.staleThreshold} s`)
       this.reconnectAttempts++
@@ -135,15 +122,15 @@ class ConnectionMonitor {
     }
   }
 
-  connectionIsStale = () => {
+  connectionIsStale = (): boolean => {
     return secondsSince(this.pingedAt ?? this.startedAt) > ConnectionMonitor.staleThreshold
   }
 
-  disconnectedRecently = () => {
+  disconnectedRecently = (): boolean => {
     return this.disconnectedAt && secondsSince(this.disconnectedAt) < ConnectionMonitor.staleThreshold
   }
 
-  visibilityDidChange = () => {
+  visibilityDidChange = (): void => {
     if (AppState.currentState === APP_STATE_ACTIVE) {
       setTimeout(() => {
         if (this.connectionIsStale() || !this.connection.isOpen()) {
@@ -155,30 +142,17 @@ class ConnectionMonitor {
   }
 }
 
-/**
- * @returns {number}
- */
-function now() {
+function now(): number {
   return new Date().getTime()
 }
 
-/**
- * @param {number | undefined} time
- * @returns {number}
- */
-function secondsSince(time) {
+function secondsSince(time?: number): number {
   if (time == null) return Infinity
   return (now() - time) / 1000
 }
 
-/**
- * @param {number} number
- * @param {number} min
- * @param {number} max
- * @returns {number}
- */
-function clamp(number, min, max) {
+function clamp(number: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, number))
 }
 
-module.exports = ConnectionMonitor
+export default ConnectionMonitor

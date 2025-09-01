@@ -2,7 +2,7 @@
   "name": "@kesha-antonov/react-native-action-cable",
   "version": "1.1.5",
   "description": "Use Rails 5+ ActionCable channels with React Native for realtime magic.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bump": "npm version patch",

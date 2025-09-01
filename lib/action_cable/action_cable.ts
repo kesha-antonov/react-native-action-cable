@@ -1,50 +1,51 @@
-const Consumer = require('./consumer')
-const INTERNAL = require('./internal')
+import Consumer from './consumer'
+import INTERNAL from './internal'
 
-/**
- * @typedef {function(...any): void} LogFunction
- */
+// Declare global for Node.js compatibility
+declare const global: any
 
-/**
- * @typedef {function(): any | any} HeadersProvider
- */
+export type LogFunction = (...args: any[]) => void
 
-/**
- * @typedef {function(): string | string} UrlProvider
- */
+export type HeadersProvider = (() => any) | any
 
-const ActionCable = {
+export type UrlProvider = (() => string) | string
+
+interface ActionCableInterface {
+  INTERNAL: typeof INTERNAL
+  WebSocket: any
+  logger: any
+  debugging: boolean | null
+  _consumers: Record<string, Consumer>
+  
+  createConsumer(url: UrlProvider, headers?: HeadersProvider): Consumer
+  getOrCreateConsumer(url: UrlProvider, headers?: HeadersProvider): Consumer
+  disconnectConsumer(url: UrlProvider, headers?: HeadersProvider): boolean
+  _createCacheKey(url: UrlProvider, headers: HeadersProvider): string
+  startDebugging(): void
+  stopDebugging(): void
+  log(...messages: any[]): void
+}
+
+const ActionCable: ActionCableInterface = {
   INTERNAL: INTERNAL,
-  WebSocket: (typeof window !== 'undefined' && window.WebSocket) 
-    ? window.WebSocket 
+  WebSocket: (typeof window !== 'undefined' && (window as any).WebSocket) 
+    ? (window as any).WebSocket 
     : (typeof global !== 'undefined' && global.WebSocket) 
       ? global.WebSocket 
-      : globalThis.WebSocket,
-  logger: (typeof window !== 'undefined' && window.console) 
-    ? window.console 
+      : (globalThis as any).WebSocket,
+  logger: (typeof window !== 'undefined' && (window as any).console) 
+    ? (window as any).console 
     : (typeof global !== 'undefined' && global.console) 
       ? global.console 
       : console,
-  /** @type {boolean | null} */
   debugging: false,
-  /** @type {Record<string, any>} */
   _consumers: {},
 
-  /**
-   * @param {UrlProvider} url
-   * @param {HeadersProvider} headers
-   * @returns {any}
-   */
-  createConsumer(url, headers = {}) {
+  createConsumer(url: UrlProvider, headers: HeadersProvider = {}): Consumer {
     return new Consumer(url, this.log, this.WebSocket, headers)
   },
 
-  /**
-   * @param {UrlProvider} url
-   * @param {HeadersProvider} headers
-   * @returns {any}
-   */
-  getOrCreateConsumer(url, headers = {}) {
+  getOrCreateConsumer(url: UrlProvider, headers: HeadersProvider = {}): Consumer {
     // Create a cache key based on URL and headers
     const cacheKey = this._createCacheKey(url, headers)
     
@@ -68,12 +69,7 @@ const ActionCable = {
     return consumer
   },
 
-  /**
-   * @param {UrlProvider} url
-   * @param {HeadersProvider} headers
-   * @returns {boolean}
-   */
-  disconnectConsumer(url, headers = {}) {
+  disconnectConsumer(url: UrlProvider, headers: HeadersProvider = {}): boolean {
     const cacheKey = this._createCacheKey(url, headers)
     if (this._consumers[cacheKey]) {
       this._consumers[cacheKey].disconnect()
@@ -85,12 +81,7 @@ const ActionCable = {
     }
   },
 
-  /**
-   * @param {UrlProvider} url
-   * @param {HeadersProvider} headers
-   * @returns {string}
-   */
-  _createCacheKey(url, headers) {
+  _createCacheKey(url: UrlProvider, headers: HeadersProvider): string {
     // Create URL string (handle function case)
     const urlStr = typeof url === 'function' ? url() : url
     // Create headers string (handle function case)  
@@ -98,18 +89,15 @@ const ActionCable = {
     return `${urlStr}|${headersStr}`
   },
 
-  startDebugging() {
+  startDebugging(): void {
     this.debugging = true
   },
 
-  stopDebugging() {
+  stopDebugging(): void {
     this.debugging = null
   },
 
-  /**
-   * @param {...any} messages
-   */
-  log(...messages) {
+  log(...messages: any[]): void {
     if (ActionCable.debugging) {
       messages.push(Date.now())
       ActionCable.logger.log("[ActionCable]", ...messages)
@@ -117,4 +105,4 @@ const ActionCable = {
   }
 }
 
-module.exports = ActionCable
+export default ActionCable

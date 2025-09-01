@@ -1,28 +1,31 @@
-const INTERNAL = require('./internal')
-const Subscription = require('./subscription')
+import INTERNAL from './internal'
+import Subscription from './subscription'
 
-/**
- * @typedef {Object} ChannelParams
- * @property {string} channel
- * @property {any} [key]
- */
+export interface ChannelParams {
+  channel: string
+  [key: string]: any
+}
+
+export interface SubscriptionConsumer {
+  send(data: any): void
+  subscriptions: {
+    remove(subscription: Subscription): void
+  }
+}
+
+export interface Consumer extends SubscriptionConsumer {
+  ensureActiveConnection(): void
+}
 
 class Subscriptions {
-  /**
-   * @param {any} consumer
-   */
-  constructor(consumer) {
-    /** @type {any} */
+  consumer: Consumer
+  subscriptions: Subscription[] = []
+
+  constructor(consumer: Consumer) {
     this.consumer = consumer
-    /** @type {any[]} */
-    this.subscriptions = []
   }
 
-  /**
-   * @param {string | ChannelParams} channelName
-   * @returns {any}
-   */
-  create = (channelName) => {
+  create = (channelName: string | ChannelParams): Subscription => {
     const channel = channelName
     const params = typeof channel === 'object' ? channel : { channel }
     const subscription = new Subscription(this.consumer, params)
@@ -31,11 +34,7 @@ class Subscriptions {
 
   // Private
 
-  /**
-   * @param {any} subscription
-   * @returns {any}
-   */
-  add = (subscription) => {
+  add = (subscription: Subscription): Subscription => {
     this.subscriptions.push(subscription)
     this.consumer.ensureActiveConnection()
     this.notify(subscription, "initialized")
@@ -43,11 +42,7 @@ class Subscriptions {
     return subscription
   }
 
-  /**
-   * @param {any} subscription
-   * @returns {any}
-   */
-  remove = (subscription) => {
+  remove = (subscription: Subscription): Subscription => {
     this.forget(subscription)
     if (!this.findAll(subscription.identifier).length) {
       this.sendCommand(subscription, "unsubscribe")
@@ -55,11 +50,7 @@ class Subscriptions {
     return subscription
   }
 
-  /**
-   * @param {string} identifier
-   * @returns {any[]}
-   */
-  reject = (identifier) => {
+  reject = (identifier: string): Subscription[] => {
     const subscriptions = this.findAll(identifier)
     for (const subscription of subscriptions) {
       this.forget(subscription)
@@ -68,46 +59,29 @@ class Subscriptions {
     return subscriptions
   }
 
-  /**
-   * @param {any} subscription
-   * @returns {any}
-   */
-  forget = (subscription) => {
+  forget = (subscription: Subscription): Subscription => {
     this.subscriptions = this.subscriptions.filter(s => s !== subscription)
     return subscription
   }
 
-  /**
-   * @param {string} identifier
-   * @returns {any[]}
-   */
-  findAll = (identifier) => {
+  findAll = (identifier: string): Subscription[] => {
     return this.subscriptions.filter(s => s.identifier === identifier)
   }
 
-  reload = () => {
+  reload = (): void => {
     for (const subscription of this.subscriptions) {
       this.sendCommand(subscription, "subscribe")
     }
   }
 
-  /**
-   * @param {string} callbackName
-   * @param {...any} args
-   */
-  notifyAll = (callbackName, ...args) => {
+  notifyAll = (callbackName: string, ...args: any[]): void => {
     for (const subscription of this.subscriptions) {
       this.notify(subscription, callbackName, ...args)
     }
   }
 
-  /**
-   * @param {any} subscription
-   * @param {string} callbackName
-   * @param {...any} args
-   */
-  notify = (subscription, callbackName, ...args) => {
-    let subscriptions
+  notify = (subscription: Subscription | string, callbackName: string, ...args: any[]): void => {
+    let subscriptions: Subscription[]
     if (typeof subscription === "string") {
       subscriptions = this.findAll(subscription)
     } else {
@@ -115,20 +89,16 @@ class Subscriptions {
     }
 
     for (const sub of subscriptions) {
-      if (typeof sub[callbackName] === 'function') {
-        sub[callbackName](...args)
+      if (typeof (sub as any)[callbackName] === 'function') {
+        ;(sub as any)[callbackName](...args)
       }
     }
   }
 
-  /**
-   * @param {any} subscription
-   * @param {string} command
-   */
-  sendCommand = (subscription, command) => {
+  sendCommand = (subscription: Subscription, command: string): void => {
     const { identifier } = subscription
     this.consumer.send({ command, identifier })
   }
 }
 
-module.exports = Subscriptions
+export default Subscriptions
