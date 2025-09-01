@@ -1,5 +1,4 @@
 node_modules
 *.cjs
 test_*.cjs
-dist/
 .DS_Store
