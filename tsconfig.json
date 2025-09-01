@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "CommonJS",
+    "lib": ["ES2017", "DOM"],
+    "outDir": "./dist",
+    "rootDir": "./lib",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false,
+    "noImplicitAny": false,
+    "moduleResolution": "node"
+  },
+  "include": ["lib/**/*"],
+  "exclude": ["node_modules", "dist", "examples"]
+}

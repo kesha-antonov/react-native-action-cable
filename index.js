@@ -1,4 +1,4 @@
-const ActionCable = require('./lib/action_cable/action_cable')
-const Cable = require('./lib/cable')
+const ActionCable = require('./dist/action_cable/action_cable').default
+const Cable = require('./dist/cable').default
 
 module.exports = { ActionCable, Cable }
