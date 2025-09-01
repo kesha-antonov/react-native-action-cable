@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require_relative '../config/environment'
+
+puts "Starting Rails server with ActionCable..."
+puts "ActionCable available at: ws://localhost:3000/cable"
+puts "API endpoints:"
+puts "  GET  /health"
+puts "  GET  /messages"  
+puts "  POST /messages"
+puts ""
+
+require 'rails/commands'

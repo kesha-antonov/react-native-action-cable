@@ -467,9 +467,23 @@ For comprehensive examples including:
 
 Check the [`examples/testing`](examples/testing) directory in this repository.
 
-## Apollo GraphQL Integration
+## Complete Examples
 
-For using ActionCable with GraphQL subscriptions and Apollo Client, see the complete integration example:
+### Basic Chat Application
+
+For a complete working example with both Rails backend and React Native frontend:
+
+**[Complete Chat App Example](examples/complete-chat-app)**
+
+This example includes:
+- **Complete Rails Backend**: Ready-to-run Rails API with ActionCable channel
+- **Complete React Native Frontend**: Full app using this library for real-time chat
+- **Step-by-step Setup**: Detailed instructions for both backend and frontend
+- **Real-time Messaging**: Live demonstration of ActionCable integration
+
+### Apollo GraphQL Integration
+
+For using ActionCable with GraphQL subscriptions and Apollo Client:
 
 **[Apollo GraphQL Example](examples/apollo-graphql)**
 
