@@ -2,11 +2,9 @@
   "name": "@kesha-antonov/react-native-action-cable",
   "version": "1.1.5",
   "description": "Use Rails 5+ ActionCable channels with React Native for realtime magic.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "gulp watch",
-    "build": "gulp",
     "bump": "npm version patch",
     "publish": "npm publish"
   },
@@ -26,14 +24,7 @@
   },
   "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
   "devDependencies": {
-    "coffee-loader": "^5.0.0",
-    "coffeescript": "^2.7.0",
-    "del": "^7.1.0",
-    "gulp": "^4.0.2",
-    "gulp-coffee": "^3.0.3",
-    "gulp-uglify-es": "^3.0.0",
-    "webpack": "^5.90.3",
-    "webpack-stream": "^7.0.0"
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "eventemitter3": "5.0.1"
@@ -41,5 +32,5 @@
   "directories": {
     "lib": "lib"
   },
-  "type": "module"
+  "type": "commonjs"
 }
