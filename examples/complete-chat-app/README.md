@@ -50,32 +50,48 @@ complete-chat-app/
 
 ## Quick Start
 
-### 1. Start the Rails Backend
+### 1. Validate the Example (Optional)
+
+```bash
+# Run validation to ensure everything is set up correctly
+./validate-example.sh
+```
+
+### 2. Start the Rails Backend
 
 ```bash
 cd rails-backend
 bundle install
-rails server
+bundle exec rails server
 ```
 
-The Rails server will start on `http://localhost:3000`
+The Rails server will start on `http://localhost:3000` with ActionCable at `ws://localhost:3000/cable`
 
-### 2. Start the React Native Frontend
+### 3. Start the React Native Frontend
 
 ```bash
 cd react-native-frontend
 npm install
 # For iOS
-npx react-native run-ios
+npm run ios
 # For Android  
-npx react-native run-android
+npm run android
 ```
 
-### 3. Test the Chat
+### 4. Test the Integration
+
+```bash
+# Test the Rails API (optional)
+node demo.js
+```
+
+### 5. Use the Chat App
 
 - Open the React Native app
-- Type a message and press send
+- Tap your username to change it
+- Type a message and press send  
 - Open another instance (simulator/device) to see real-time messaging
+- Watch the connection status indicator
 
 ## Detailed Setup Instructions
 
@@ -83,6 +99,37 @@ See the individual README files in each directory:
 
 - [Rails Backend Setup](rails-backend/README.md)
 - [React Native Frontend Setup](react-native-frontend/README.md)
+
+## Additional Tools
+
+### Validation Script
+
+Run `./validate-example.sh` to check if both backend and frontend are properly configured:
+
+```bash
+./validate-example.sh
+```
+
+This script validates:
+- Rails configuration files and syntax
+- ActionCable channel setup  
+- React Native component syntax
+- Package dependencies
+- Required files existence
+
+### Demo Script
+
+Run `node demo.js` to test the Rails backend API endpoints:
+
+```bash
+node demo.js
+```
+
+This script tests:
+- Rails server connectivity
+- REST API endpoints  
+- Displays ActionCable connection information
+- Shows integration examples
 
 ## How it Works
 
