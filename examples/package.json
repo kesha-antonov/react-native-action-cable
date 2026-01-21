@@ -1,0 +1,11 @@
+{
+  "name": "react-native-action-cable-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example files for @kesha-antonov/react-native-action-cable",
+  "devDependencies": {
+    "@types/react": "~19.0.0",
+    "@types/react-native": "~0.73.0",
+    "typescript": "~5.9.0"
+  }
+}

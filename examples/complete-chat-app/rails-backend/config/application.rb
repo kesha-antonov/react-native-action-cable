@@ -10,11 +10,11 @@ Bundler.require(*Rails.groups)
 
 module ChatApp
   class Application < Rails::Application
-    config.load_defaults 7.0
-    
+    config.load_defaults 8.0
+
     # API-only application
     config.api_only = true
-    
+
     # ActionCable configuration
     config.action_cable.mount_path = '/cable'
     config.action_cable.url = 'ws://localhost:3000/cable'

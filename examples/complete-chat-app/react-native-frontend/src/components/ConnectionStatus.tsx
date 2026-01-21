@@ -1,7 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react'
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native'
 
-const ConnectionStatus = ({ isConnected, statusMessage }) => {
+interface ConnectionStatusProps {
+  isConnected: boolean
+  statusMessage?: string
+}
+
+interface Styles {
+  container: ViewStyle
+  connected: ViewStyle
+  disconnected: ViewStyle
+  text: TextStyle
+}
+
+const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected, statusMessage }) => {
   return (
     <View style={[styles.container, isConnected ? styles.connected : styles.disconnected]}>
       <Text style={styles.text}>
@@ -9,10 +21,10 @@ const ConnectionStatus = ({ isConnected, statusMessage }) => {
         {statusMessage ? ` - ${statusMessage}` : ''}
       </Text>
     </View>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Styles>({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -28,6 +40,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-});
+})
 
-export default ConnectionStatus;
+export default ConnectionStatus

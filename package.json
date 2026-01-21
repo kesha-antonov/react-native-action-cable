@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "eventemitter3": "5.0.1"
+    "eventemitter3": "5.0.4"
   },
   "directories": {
     "lib": "lib"

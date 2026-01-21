@@ -1,30 +1,36 @@
-import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import React, { useState } from 'react'
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ViewStyle, TextStyle } from 'react-native'
 
-const MessageInput = ({ onSendMessage, isConnected }) => {
-  const [message, setMessage] = useState('');
+interface MessageInputProps {
+  onSendMessage: (message: string) => void
+  isConnected: boolean
+}
 
-  const handleSend = () => {
+interface Styles {
+  container: ViewStyle
+  textInput: TextStyle
+  sendButton: ViewStyle
+  sendButtonDisabled: ViewStyle
+  sendButtonText: TextStyle
+}
+
+const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isConnected }) => {
+  const [message, setMessage] = useState('')
+
+  const handleSend = (): void => {
     if (!isConnected) {
-      Alert.alert('Not Connected', 'Please wait for the connection to be established.');
-      return;
+      Alert.alert('Not Connected', 'Please wait for the connection to be established.')
+      return
     }
 
     if (message.trim().length === 0) {
-      Alert.alert('Empty Message', 'Please enter a message.');
-      return;
+      Alert.alert('Empty Message', 'Please enter a message.')
+      return
     }
 
-    onSendMessage(message.trim());
-    setMessage('');
-  };
+    onSendMessage(message.trim())
+    setMessage('')
+  }
 
   return (
     <View style={styles.container}>
@@ -47,10 +53,10 @@ const MessageInput = ({ onSendMessage, isConnected }) => {
         <Text style={styles.sendButtonText}>Send</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Styles>({
   container: {
     flexDirection: 'row',
     padding: 16,
@@ -84,6 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-});
+})
 
-export default MessageInput;
+export default MessageInput

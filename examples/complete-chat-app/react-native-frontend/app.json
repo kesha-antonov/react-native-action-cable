@@ -1,4 +1,24 @@
 {
-  "name": "ChatAppFrontend",
-  "displayName": "Chat App"
+  "expo": {
+    "name": "Chat App",
+    "slug": "chat-app-frontend",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "chatapp",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.chatapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.example.chatapp"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
 }

@@ -1,18 +1,41 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  StyleSheet,
-} from 'react-native';
+import React from 'react'
+import { View, Text, ScrollView, StyleSheet, ViewStyle, TextStyle } from 'react-native'
 
-const MessageList = ({ messages }) => {
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+interface Message {
+  type: string
+  id?: string
+  message?: string
+  username?: string
+  timestamp?: string
+  [key: string]: unknown
+}
 
-  const renderMessage = (message, index) => {
+interface MessageListProps {
+  messages: Message[]
+}
+
+interface Styles {
+  container: ViewStyle
+  contentContainer: ViewStyle
+  messageContainer: ViewStyle
+  messageHeader: ViewStyle
+  username: TextStyle
+  timestamp: TextStyle
+  messageText: TextStyle
+  systemMessageContainer: ViewStyle
+  systemMessage: TextStyle
+  emptyContainer: ViewStyle
+  emptyText: TextStyle
+}
+
+const MessageList: React.FC<MessageListProps> = ({ messages }) => {
+  const formatTime = (timestamp?: string): string => {
+    if (!timestamp) return ''
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const renderMessage = (message: Message, index: number): React.ReactNode => {
     if (message.type === 'new_message') {
       return (
         <View key={message.id || index} style={styles.messageContainer}>
@@ -22,7 +45,7 @@ const MessageList = ({ messages }) => {
           </View>
           <Text style={styles.messageText}>{message.message}</Text>
         </View>
-      );
+      )
     } else if (message.type === 'user_joined' || message.type === 'user_left') {
       return (
         <View key={index} style={styles.systemMessageContainer}>
@@ -30,18 +53,14 @@ const MessageList = ({ messages }) => {
             {message.message} at {formatTime(message.timestamp)}
           </Text>
         </View>
-      );
+      )
     }
-    
-    return null;
-  };
+
+    return null
+  }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
       {messages.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No messages yet. Start the conversation!</Text>
@@ -50,10 +69,10 @@ const MessageList = ({ messages }) => {
         messages.map((message, index) => renderMessage(message, index))
       )}
     </ScrollView>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Styles>({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
@@ -116,6 +135,6 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-});
+})
 
-export default MessageList;
+export default MessageList

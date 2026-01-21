@@ -1,0 +1,19 @@
+# SQLite databases
+storage/
+
+# Bundler
+.bundle/
+vendor/bundle/
+
+# Logs
+log/
+
+# Temporary files
+tmp/
+
+# Environment files
+.env
+.env.local
+
+# macOS
+.DS_Store
