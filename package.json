@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "bump": "npm version patch",
-    "publish": "npm publish"
+    "publish": "npm publish",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,8 @@
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
     "eslint": "^9.27.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.5.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -45,5 +48,8 @@
   "directories": {
     "lib": "lib"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix"
+  }
 }
