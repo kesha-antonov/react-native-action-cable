@@ -1,4 +1,5 @@
 import Subscription from './subscription'
+import SubscriptionGuarantor from './subscription_guarantor'
 
 export interface ChannelParams {
   channel: string
@@ -6,7 +7,7 @@ export interface ChannelParams {
 }
 
 export interface SubscriptionConsumer {
-  send(data: any): void
+  send(data: any): boolean
   subscriptions: {
     remove(subscription: Subscription): void
   }
@@ -16,12 +17,18 @@ export interface Consumer extends SubscriptionConsumer {
   ensureActiveConnection(): void
 }
 
+export type LogFunction = (...args: unknown[]) => void
+
 class Subscriptions {
   consumer: Consumer
   subscriptions: Subscription[] = []
+  guarantor: SubscriptionGuarantor
+  log: LogFunction
 
-  constructor(consumer: Consumer) {
+  constructor(consumer: Consumer, log: LogFunction) {
     this.consumer = consumer
+    this.log = log
+    this.guarantor = new SubscriptionGuarantor(this)
   }
 
   create = (channelName: string | ChannelParams): Subscription => {
@@ -37,7 +44,7 @@ class Subscriptions {
     this.subscriptions.push(subscription)
     this.consumer.ensureActiveConnection()
     this.notify(subscription, 'initialized')
-    this.sendCommand(subscription, 'subscribe')
+    this.subscribe(subscription)
     return subscription
   }
 
@@ -59,6 +66,7 @@ class Subscriptions {
   }
 
   forget = (subscription: Subscription): Subscription => {
+    this.guarantor.forget(subscription)
     this.subscriptions = this.subscriptions.filter(s => s !== subscription)
     return subscription
   }
@@ -69,7 +77,7 @@ class Subscriptions {
 
   reload = (): void => {
     for (const subscription of this.subscriptions) {
-      this.sendCommand(subscription, 'subscribe')
+      this.subscribe(subscription)
     }
   }
 
@@ -94,14 +102,20 @@ class Subscriptions {
     }
   }
 
-  sendCommand = (subscription: Subscription, command: string): void => {
-    const { identifier } = subscription
-    this.consumer.send({ command, identifier })
+  subscribe = (subscription: Subscription): void => {
+    if (this.sendCommand(subscription, 'subscribe')) {
+      this.guarantor.guarantee(subscription)
+    }
   }
 
-  confirmSubscription = (_identifier: string): void => {
-    // In Rails 8, this method logs subscription confirmation
-    // We skip logging here to maintain compatibility with existing interface
+  confirmSubscription = (identifier: string): void => {
+    this.log(`Subscription confirmed ${identifier}`)
+    this.findAll(identifier).forEach(subscription => this.guarantor.forget(subscription))
+  }
+
+  sendCommand = (subscription: Subscription, command: string): boolean => {
+    const { identifier } = subscription
+    return this.consumer.send({ command, identifier })
   }
 }
 

@@ -38,4 +38,9 @@ const INTERNAL: Internal = {
   protocols: ['actioncable-v1-json', 'actioncable-unsupported'],
 }
 
+// Default log function (no-op, can be overridden by ActionCable.debugging)
+export const log = (..._messages: unknown[]): void => {
+  // No-op by default - actual logging is handled by ActionCable.log
+}
+
 export default INTERNAL

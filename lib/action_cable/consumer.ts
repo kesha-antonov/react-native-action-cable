@@ -1,6 +1,7 @@
 import Connection from './connection'
 import Subscriptions from './subscriptions'
 import type { Consumer as ConsumerInterface } from './subscriptions'
+import { log as defaultLog } from './internal'
 
 export type LogFunction = (...args: any[]) => void
 
@@ -17,14 +18,15 @@ class Consumer implements ConsumerInterface {
   WebSocket: WebSocketConstructor
   subscriptions: Subscriptions
   connection: Connection
+  subprotocols: string[] = []
 
   constructor(url: UrlProvider, log: LogFunction, WebSocketClass: WebSocketConstructor, headers: HeadersProvider = {}) {
     this._url = url
     this._headers = headers
-    this.log = log
+    this.log = log || defaultLog
     this.WebSocket = WebSocketClass
-    this.subscriptions = new Subscriptions(this)
-    this.connection = new Connection(this, log, WebSocketClass)
+    this.subscriptions = new Subscriptions(this, this.log)
+    this.connection = new Connection(this, this.log, WebSocketClass)
   }
 
   get url(): string {
@@ -35,12 +37,12 @@ class Consumer implements ConsumerInterface {
     return this.createHeaders(this._headers)
   }
 
-  send = (data: any): void => {
-    this.connection.send(data)
+  send = (data: any): boolean => {
+    return this.connection.send(data)
   }
 
-  connect = (): void => {
-    this.connection.open()
+  connect = (): boolean => {
+    return this.connection.open()
   }
 
   disconnect = (): void => {
@@ -51,6 +53,10 @@ class Consumer implements ConsumerInterface {
     if (!this.connection.isActive()) {
       this.connection.open()
     }
+  }
+
+  addSubProtocol = (subprotocol: string): void => {
+    this.subprotocols = [...this.subprotocols, subprotocol]
   }
 
   createWebSocketURL(url: UrlProvider): string {

@@ -8,6 +8,7 @@ const supportedProtocols = protocols.slice(0, -1)
 export interface Consumer {
   url: string
   headers: any
+  subprotocols: string[]
   subscriptions: {
     reload(): void
     notify(identifier: string, callbackName: string, ...args: any[]): void
@@ -55,11 +56,12 @@ class Connection {
       this.log(`Attempted to open WebSocket, but existing socket is ${this.getState()}`)
       return false
     } else {
-      this.log(`Opening WebSocket, current state is ${this.getState()}, subprotocols: ${protocols}`)
+      const socketProtocols = [...protocols, ...this.consumer.subprotocols]
+      this.log(`Opening WebSocket, current state is ${this.getState()}, subprotocols: ${socketProtocols}`)
       if (this.webSocket) {
         this.uninstallEventHandlers()
       }
-      this.webSocket = new this.WebSocket(this.consumer.url, protocols, { headers: this.consumer.headers })
+      this.webSocket = new this.WebSocket(this.consumer.url, socketProtocols, { headers: this.consumer.headers })
       this.installEventHandlers()
       this.monitor.start()
       return true
