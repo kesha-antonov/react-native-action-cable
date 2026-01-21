@@ -103,7 +103,7 @@ describe('ChatComponent', () => {
     // Simulate connection
     await waitFor(() => {
       const connectedCall = mockSubscription.on.mock.calls.find(
-        (call: [string, () => void]) => call[0] === 'connected'
+        (call: [string, () => void]) => call[0] === 'connected',
       )
       if (connectedCall) {
         connectedCall[1]()
@@ -121,7 +121,7 @@ describe('ChatComponent', () => {
     // Simulate receiving a message
     await waitFor(() => {
       const receivedCall = mockSubscription.on.mock.calls.find(
-        (call: [string, (data: unknown) => void]) => call[0] === 'received'
+        (call: [string, (data: unknown) => void]) => call[0] === 'received',
       )
       if (receivedCall) {
         receivedCall[1]({

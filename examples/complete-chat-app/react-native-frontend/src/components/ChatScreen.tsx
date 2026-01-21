@@ -49,7 +49,7 @@ const ChatScreen: React.FC = () => {
 
   const handleNewMessage = (data: MessageData): void => {
     console.log('New message received:', data)
-    setMessages((prevMessages) => [...prevMessages, data])
+    setMessages(prevMessages => [...prevMessages, data])
   }
 
   const handleStatusChange = (connected: boolean, message: string): void => {
@@ -81,7 +81,7 @@ const ChatScreen: React.FC = () => {
         },
       ],
       'plain-text',
-      username
+      username,
     )
   }
 

@@ -31,7 +31,7 @@ class Subscription extends EventEmitter {
     this.consumer.send({
       command: 'message',
       identifier: this.identifier,
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     })
   }
 

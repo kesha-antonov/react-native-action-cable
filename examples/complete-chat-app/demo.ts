@@ -42,7 +42,7 @@ function testRestAPI(): void {
     },
   }
 
-  const req = http.request(options, (res) => {
+  const req = http.request(options, res => {
     let data = ''
 
     res.on('data', (chunk: Buffer) => {
@@ -82,11 +82,9 @@ function testHealthCheck(): void {
     method: 'GET',
   }
 
-  const req = http.request(options, (res) => {
-    let data = ''
-
-    res.on('data', (chunk: Buffer) => {
-      data += chunk
+  const req = http.request(options, res => {
+    res.on('data', () => {
+      // Consume data
     })
 
     res.on('end', () => {

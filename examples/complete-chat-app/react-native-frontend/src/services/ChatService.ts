@@ -147,7 +147,7 @@ class ChatService {
   }
 
   removeMessageListener(callback: MessageListener): void {
-    this.messageListeners = this.messageListeners.filter((l) => l !== callback)
+    this.messageListeners = this.messageListeners.filter(l => l !== callback)
   }
 
   addStatusListener(callback: StatusListener): void {
@@ -155,12 +155,12 @@ class ChatService {
   }
 
   removeStatusListener(callback: StatusListener): void {
-    this.statusListeners = this.statusListeners.filter((l) => l !== callback)
+    this.statusListeners = this.statusListeners.filter(l => l !== callback)
   }
 
   // Notify listeners
   private notifyMessageListeners(data: MessageData): void {
-    this.messageListeners.forEach((callback) => {
+    this.messageListeners.forEach(callback => {
       try {
         callback(data)
       } catch (error) {
@@ -170,7 +170,7 @@ class ChatService {
   }
 
   private notifyStatusListeners(connected: boolean, message: string = ''): void {
-    this.statusListeners.forEach((callback) => {
+    this.statusListeners.forEach(callback => {
       try {
         callback(connected, message)
       } catch (error) {

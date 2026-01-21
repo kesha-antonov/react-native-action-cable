@@ -46,7 +46,7 @@ class ActionCableConnector {
       connectActionCable.subscriptions.create({
         channel: 'RoomChannel',
         pubsub_token: pubSubToken,
-      })
+      }),
     )
 
     channel.on('received', this.onReceived)

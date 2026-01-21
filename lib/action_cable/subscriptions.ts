@@ -1,4 +1,3 @@
-import INTERNAL from './internal'
 import Subscription from './subscription'
 
 export interface ChannelParams {
@@ -37,15 +36,15 @@ class Subscriptions {
   add = (subscription: Subscription): Subscription => {
     this.subscriptions.push(subscription)
     this.consumer.ensureActiveConnection()
-    this.notify(subscription, "initialized")
-    this.sendCommand(subscription, "subscribe")
+    this.notify(subscription, 'initialized')
+    this.sendCommand(subscription, 'subscribe')
     return subscription
   }
 
   remove = (subscription: Subscription): Subscription => {
     this.forget(subscription)
     if (!this.findAll(subscription.identifier).length) {
-      this.sendCommand(subscription, "unsubscribe")
+      this.sendCommand(subscription, 'unsubscribe')
     }
     return subscription
   }
@@ -54,7 +53,7 @@ class Subscriptions {
     const subscriptions = this.findAll(identifier)
     for (const subscription of subscriptions) {
       this.forget(subscription)
-      this.notify(subscription, "rejected")
+      this.notify(subscription, 'rejected')
     }
     return subscriptions
   }
@@ -70,7 +69,7 @@ class Subscriptions {
 
   reload = (): void => {
     for (const subscription of this.subscriptions) {
-      this.sendCommand(subscription, "subscribe")
+      this.sendCommand(subscription, 'subscribe')
     }
   }
 
@@ -82,7 +81,7 @@ class Subscriptions {
 
   notify = (subscription: Subscription | string, callbackName: string, ...args: any[]): void => {
     let subscriptions: Subscription[]
-    if (typeof subscription === "string") {
+    if (typeof subscription === 'string') {
       subscriptions = this.findAll(subscription)
     } else {
       subscriptions = [subscription]
@@ -100,7 +99,7 @@ class Subscriptions {
     this.consumer.send({ command, identifier })
   }
 
-  confirmSubscription = (identifier: string): void => {
+  confirmSubscription = (_identifier: string): void => {
     // In Rails 8, this method logs subscription confirmation
     // We skip logging here to maintain compatibility with existing interface
   }

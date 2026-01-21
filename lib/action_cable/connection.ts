@@ -3,7 +3,7 @@ import ConnectionMonitor from './connection_monitor'
 
 const { message_types, protocols } = INTERNAL
 
-const [supportedProtocols, unsupportedProtocol] = protocols.slice(0, -1).concat([protocols[protocols.length - 1]])
+const supportedProtocols = protocols.slice(0, -1)
 
 export interface Consumer {
   url: string
@@ -81,7 +81,7 @@ class Connection {
       try {
         this.close()
       } catch (error) {
-        this.log("Failed to reopen WebSocket", error)
+        this.log('Failed to reopen WebSocket', error)
       } finally {
         this.log(`Reopening WebSocket in ${Connection.reopenDelay}ms`)
         setTimeout(this.open, Connection.reopenDelay)
@@ -96,11 +96,11 @@ class Connection {
   }
 
   isOpen = (): boolean => {
-    return this.isState("open")
+    return this.isState('open')
   }
 
   isActive = (): boolean => {
-    return this.isState("open", "connecting")
+    return this.isState('open', 'connecting')
   }
 
   triedToReconnect = (): boolean => {
@@ -180,16 +180,16 @@ class Connection {
           }
           if (this.reconnectAttempted) {
             this.reconnectAttempted = false
-            this.subscriptions.notify(identifier, "connected", { reconnected: true })
+            this.subscriptions.notify(identifier, 'connected', { reconnected: true })
           } else {
-            this.subscriptions.notify(identifier, "connected", { reconnected: false })
+            this.subscriptions.notify(identifier, 'connected', { reconnected: false })
           }
           break
         case message_types.rejection:
           this.subscriptions.reject(identifier)
           break
         default:
-          this.subscriptions.notify(identifier, "received", message)
+          this.subscriptions.notify(identifier, 'received', message)
       }
     },
 
@@ -197,23 +197,23 @@ class Connection {
       this.log(`WebSocket onopen event, using '${this.getProtocol()}' subprotocol`)
       this.disconnected = false
       if (!this.isProtocolSupported()) {
-        this.log("Protocol is unsupported. Stopping monitor and disconnecting.")
+        this.log('Protocol is unsupported. Stopping monitor and disconnecting.')
         this.close({ allowReconnect: false })
       }
     },
 
-    close: (event: any): void => {
-      this.log("WebSocket onclose event")
+    close: (_event: any): void => {
+      this.log('WebSocket onclose event')
       if (this.disconnected) return
       this.disconnected = true
       this.monitor.recordDisconnect()
-      this.subscriptions.notifyAll("disconnected", { willAttemptReconnect: this.monitor.isRunning() })
+      this.subscriptions.notifyAll('disconnected', { willAttemptReconnect: this.monitor.isRunning() })
     },
 
     error: (event: any): void => {
-      this.log("WebSocket onerror event")
-      this.subscriptions.notifyAll("error", event)
-    }
+      this.log('WebSocket onerror event')
+      this.subscriptions.notifyAll('error', event)
+    },
   }
 }
 

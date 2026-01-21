@@ -13,7 +13,6 @@ interface ActionCableConnection {
 
 // These would be imported from your helpers
 declare function initActionCable(): Promise<ActionCableConnection>
-declare function cleanupActionCable(): void
 
 interface ConversationListProps {}
 

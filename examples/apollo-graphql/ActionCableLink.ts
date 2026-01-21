@@ -32,7 +32,7 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
 
   return new ApolloLink(
     (operation: Operation) =>
-      new Observable<FetchResult>((observer) => {
+      new Observable<FetchResult>(observer => {
         const channelId = Math.round(Date.now() + Math.random() * 100000).toString(16)
 
         const channel = cable.setChannel(
@@ -41,7 +41,7 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
             channel: channelName,
             channelId,
             ...connectionParams,
-          })
+          }),
         )
 
         channel
@@ -67,7 +67,7 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
         return () => {
           channel.unsubscribe()
         }
-      })
+      }),
   )
 }
 

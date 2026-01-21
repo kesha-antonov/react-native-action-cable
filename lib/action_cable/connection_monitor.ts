@@ -8,7 +8,7 @@ try {
   // React Native not available, use mock
   AppState = {
     currentState: 'active',
-    addEventListener: () => ({ remove: () => {} })
+    addEventListener: () => ({ remove: () => {} }),
   }
 }
 
@@ -45,7 +45,7 @@ class ConnectionMonitor {
       this.startedAt = now()
       delete this.stoppedAt
       this.startPolling()
-      this.appStateEventListener = AppState.addEventListener("change", this.visibilityDidChange)
+      this.appStateEventListener = AppState.addEventListener('change', this.visibilityDidChange)
       this.log(`ConnectionMonitor started. pollInterval = ${this.getPollInterval()} ms`)
     }
   }
@@ -55,7 +55,7 @@ class ConnectionMonitor {
       this.stoppedAt = now()
       this.stopPolling()
       this.appStateEventListener?.remove()
-      this.log("ConnectionMonitor stopped")
+      this.log('ConnectionMonitor stopped')
     }
   }
 
@@ -74,12 +74,12 @@ class ConnectionMonitor {
   recordConnect = (): void => {
     this.reconnectAttempts = 0
     delete this.disconnectedAt
-    this.log("ConnectionMonitor recorded connect")
+    this.log('ConnectionMonitor recorded connect')
   }
 
   recordDisconnect = (): void => {
     this.disconnectedAt = now()
-    this.log("ConnectionMonitor recorded disconnect")
+    this.log('ConnectionMonitor recorded disconnect')
   }
 
   // Private
@@ -117,7 +117,7 @@ class ConnectionMonitor {
       if (this.disconnectedRecently()) {
         this.log(`ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(this.disconnectedAt)} s`)
       } else {
-        this.log("ConnectionMonitor reopening")
+        this.log('ConnectionMonitor reopening')
         this.connection.reopen()
       }
     }

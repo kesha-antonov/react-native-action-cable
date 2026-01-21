@@ -34,7 +34,7 @@ export const ChatComponent: React.FC<ChatComponentProps> = ({ chatId, userId }) 
   const handleReceived = useCallback((data: unknown): void => {
     const typedData = data as ReceivedData
     if (typedData.type === 'new_message' && typedData.message) {
-      setMessages((prev) => [...prev, typedData.message!])
+      setMessages(prev => [...prev, typedData.message!])
     }
   }, [])
 
@@ -82,18 +82,6 @@ export const ChatComponent: React.FC<ChatComponentProps> = ({ chatId, userId }) 
       delete cable.channels[channelName]
     }
   }, [getChannelName, handleReceived, handleConnected, handleDisconnected])
-
-  const sendMessage = useCallback(
-    (text: string): void => {
-      const channelName = getChannelName()
-      const channel = cable.channel(channelName)
-
-      if (channel) {
-        channel.perform('send_message', { text })
-      }
-    },
-    [getChannelName]
-  )
 
   useEffect(() => {
     createChannel()
