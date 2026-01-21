@@ -6,7 +6,7 @@ try {
   AppState = RNAppState
 } catch {
   // React Native not available, use mock
-  AppState = { 
+  AppState = {
     currentState: 'active',
     addEventListener: () => ({ remove: () => {} })
   }
@@ -132,7 +132,7 @@ class ConnectionMonitor {
   }
 
   disconnectedRecently = (): boolean => {
-    return this.disconnectedAt && secondsSince(this.disconnectedAt) < ConnectionMonitor.staleThreshold
+    return this.disconnectedAt !== undefined && secondsSince(this.disconnectedAt) < ConnectionMonitor.staleThreshold
   }
 
   visibilityDidChange = (): void => {

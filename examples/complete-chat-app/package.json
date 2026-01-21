@@ -1,0 +1,13 @@
+{
+  "name": "complete-chat-app-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo script for testing ActionCable integration",
+  "scripts": {
+    "demo": "npx tsx demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.0"
+  }
+}

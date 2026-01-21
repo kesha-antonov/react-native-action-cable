@@ -80,7 +80,7 @@ const createMockConsumer = (): MockConsumer => ({
 // Mock ActionCable object (not a constructor, but an object with methods)
 const MockActionCable = {
   INTERNAL: {},
-  WebSocket: global.WebSocket || jest.fn(),
+  WebSocket: globalThis.WebSocket || jest.fn(),
   logger: {
     log: jest.fn(),
   },

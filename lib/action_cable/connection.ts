@@ -114,7 +114,8 @@ class Connection {
   }
 
   isState = (...states: string[]): boolean => {
-    return states.indexOf(this.getState()) !== -1
+    const state = this.getState()
+    return state !== null && states.indexOf(state) !== -1
   }
 
   getState = (): string | null => {

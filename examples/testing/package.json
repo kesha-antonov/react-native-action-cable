@@ -1,0 +1,17 @@
+{
+  "name": "react-native-action-cable-testing-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jest mocking examples for @kesha-antonov/react-native-action-cable",
+  "devDependencies": {
+    "@kesha-antonov/react-native-action-cable": "link:../..",
+    "@testing-library/react-native": "^13.2.0",
+    "@types/jest": "^29.5.0",
+    "@types/react": "~19.0.0",
+    "jest": "^29.7.0",
+    "react": "19.1.0",
+    "react-native": "0.81.3",
+    "react-test-renderer": "19.1.0",
+    "typescript": "~5.9.0"
+  }
+}

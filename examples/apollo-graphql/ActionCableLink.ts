@@ -1,17 +1,11 @@
 import { ApolloLink, Observable, Operation, FetchResult } from '@apollo/client'
 import { print } from 'graphql'
-import { Cable } from '@kesha-antonov/react-native-action-cable'
+import { Cable, Subscription as CableSubscription } from '@kesha-antonov/react-native-action-cable'
 
 interface ActionCableConsumer {
   subscriptions: {
-    create: (params: Record<string, unknown>) => Subscription
+    create: (params: Record<string, unknown>) => CableSubscription
   }
-}
-
-interface Subscription {
-  on: (event: string, callback: (data: unknown) => void) => Subscription
-  perform: (action: string, data: Record<string, unknown>) => void
-  unsubscribe: () => void
 }
 
 interface ActionCableLinkOptions {
@@ -51,23 +45,21 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
         )
 
         channel
-          .on('connected', function (this: Subscription) {
-            this.perform(actionName, {
+          .on('connected', function () {
+            channel.perform(actionName, {
               query: operation.query ? print(operation.query) : null,
               variables: operation.variables,
-              // @ts-expect-error operationId may not exist on Operation type
-              operationId: operation.operationId,
               operationName: operation.operationName,
             })
           })
-          .on('received', function (this: Subscription, payload: unknown) {
+          .on('received', function (_data: unknown, payload: unknown) {
             const typedPayload = payload as SubscriptionPayload
             if (typedPayload.result.data || typedPayload.result.errors) {
               observer.next(typedPayload.result as FetchResult)
             }
 
             if (!typedPayload.more) {
-              this.unsubscribe()
+              channel.unsubscribe()
               observer.complete()
             }
           })
