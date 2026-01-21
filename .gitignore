@@ -1,3 +1,8 @@
 node_modules
 *.cjs
 .DS_Store
+
+# Expo generated native folders
+examples/**/ios/
+examples/**/android/
+examples/**/.expo/

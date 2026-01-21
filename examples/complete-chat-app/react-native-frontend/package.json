@@ -7,7 +7,11 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "prebuild": "expo prebuild",
+    "prebuild:clean": "expo prebuild --clean",
+    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios"
   },
   "dependencies": {
     "@kesha-antonov/react-native-action-cable": "link:../../..",
@@ -16,8 +20,9 @@
     "expo-linking": "~8.0.0",
     "expo-router": "~5.0.0",
     "expo-status-bar": "~3.0.0",
+    "expo-system-ui": "^6.0.9",
     "react": "19.1.0",
-    "react-native": "0.81.3",
+    "react-native": "0.81.5",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "4.20.0"
   },
