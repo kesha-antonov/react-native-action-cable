@@ -1,38 +1,59 @@
-# react-native-action-cable Changelog
+# Changelog
 
-## Key
+## v2.0.0
 
-* `[CHANGE]`: A breaking change. After an upgrade, your app may need
-  modifications to keep working correctly.
-* `[FEATURE]`: A non-breaking improvement to the app. Either introduces new
-  functionality, or improves on an existing feature.
-* `[UI]`: Non-breaking changes to the default user interface (HTML/CSS).
-* `[BUGFIX]`: Fixes a bug with a non-breaking change.
-* `[COMPAT]`: Compatibility improvements - changes to make Administrate more
-  compatible with different dependency versions.
-* `[I18n]`: Internationalization. Changes to translations or localizations.
-* `[OPTIM]`: Optimization or performance increase.
-* `[DOC]`: Documentation changes. No changes to the library's behavior.
-* `[SECURITY]`: A change which fixes a security vulnerability.
+### ⚠️ Breaking Changes
 
-## Changes
+- **TypeScript Rewrite:** Library is now written entirely in TypeScript
+- **ES Modules:** Migrated from CommonJS `require()` to ES module imports
 
-### 1.1.4 (Nov 10, 2022)
+### ✨ New Features
 
-* `[BUGFIX]`: Fixes deprecated usage of `AppState` [#14] (https://github.com/kesha-antonov/react-native-action-cable/issues/14)
+- **SubscriptionGuarantor:** Added reliable subscription establishment with automatic retry logic synced from Rails ActionCable
+- **Subprotocols Support:** Added `consumer.addSubProtocol()` to specify custom WebSocket subprotocols
 
-### 1.1.3 (Nov 10, 2022)
+### 📚 Documentation
 
-* `[FEATURE]`: Made build
+- Added complete chat app example with Rails backend and Expo frontend
+- Added Apollo GraphQL integration example
+- Updated README with TypeScript examples
 
-### 1.1.2 (Nov 10, 2022)
+---
 
-* `[BUGFIX]`: Fixes crash when received data is `null` [#7] (https://github.com/kesha-antonov/react-native-action-cable/issues/7)
+## v1.1.4
 
-### 1.1.1 (Nov 10, 2022)
+### 🐛 Bug Fixes
 
-* `[FEATURE]`: Updated deps
+- **AppState Deprecation:** Fixed deprecated usage of `AppState` ([#14](https://github.com/kesha-antonov/react-native-action-cable/issues/14))
 
-### 1.1.0 (July 2, 2020)
+---
 
-* [BUGFIX] [#11] Fix Firefox error `Unhandled Rejection (TypeError): setting getter-only property "protocol"`.
+## v1.1.3
+
+### 📦 Dependencies & Infrastructure
+
+- Made build
+
+---
+
+## v1.1.2
+
+### 🐛 Bug Fixes
+
+- **Null Data Crash:** Fixed crash when received data is `null` ([#7](https://github.com/kesha-antonov/react-native-action-cable/issues/7))
+
+---
+
+## v1.1.1
+
+### 📦 Dependencies & Infrastructure
+
+- Updated dependencies
+
+---
+
+## v1.1.0
+
+### 🐛 Bug Fixes
+
+- **Firefox Protocol Error:** Fixed Firefox error `Unhandled Rejection (TypeError): setting getter-only property "protocol"` ([#11](https://github.com/kesha-antonov/react-native-action-cable/issues/11))
