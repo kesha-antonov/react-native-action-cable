@@ -1,7 +1,7 @@
 {
   "name": "@kesha-antonov/react-native-action-cable",
   "version": "1.1.5",
-  "description": "Use Rails 5+ ActionCable channels with React Native for realtime magic.",
+  "description": "Connect React Native apps to Rails ActionCable for real-time bidirectional communication.",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,9 +13,16 @@
     "url": "git+https://github.com/kesha-antonov/react-native-action-cable.git"
   },
   "keywords": [
-    "rails",
+    "react-native",
     "actioncable",
-    "react native"
+    "action-cable",
+    "rails",
+    "websocket",
+    "realtime",
+    "real-time",
+    "channels",
+    "subscriptions",
+    "typescript"
   ],
   "author": "Zach Schneider <zach@schneid.io>, Kesha Antonov <innokenty.longway@gmail.com>",
   "license": "MIT",
