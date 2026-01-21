@@ -1,7 +1,7 @@
 {
   "name": "@kesha-antonov/react-native-action-cable",
   "version": "2.0.0",
-  "description": "Connect React Native apps to Rails ActionCable for real-time bidirectional communication.",
+  "description": "Use Rails ActionCable channels with React Native for real-time WebSocket communication.",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
