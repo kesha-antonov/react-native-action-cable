@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, Alert, ViewStyle, TextStyle } from 'react-native'
+import { View, Text, StyleSheet, Alert, ViewStyle, TextStyle, TouchableOpacity } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import * as Clipboard from 'expo-clipboard'
+import { Ionicons } from '@expo/vector-icons'
 
 import ChatService from '../services/ChatService'
 import ConnectionStatus from './ConnectionStatus'
 import MessageList from './MessageList'
 import MessageInput from './MessageInput'
+
+const WEB_APP_URL = 'http://localhost:3000'
 
 interface MessageData {
   type: string
@@ -18,8 +23,13 @@ interface MessageData {
 interface Styles {
   container: ViewStyle
   header: ViewStyle
+  headerRow: ViewStyle
   title: TextStyle
   subtitle: TextStyle
+  copyRow: ViewStyle
+  copyText: TextStyle
+  badge: ViewStyle
+  badgeText: TextStyle
 }
 
 const ChatScreen: React.FC = () => {
@@ -85,13 +95,27 @@ const ChatScreen: React.FC = () => {
     )
   }
 
+  const openWebApp = (): void => {
+    Clipboard.setStringAsync(WEB_APP_URL)
+    Alert.alert('Copied!', WEB_APP_URL)
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>ActionCable Chat</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>ActionCable Chat</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>Mobile</Text>
+          </View>
+        </View>
         <Text style={styles.subtitle} onPress={handleUsernameChange}>
           {username} (tap to change)
         </Text>
+        <TouchableOpacity style={styles.copyRow} onPress={openWebApp}>
+          <Text style={styles.copyText}>{WEB_APP_URL}</Text>
+          <Ionicons name="copy-outline" size={14} color="#666" />
+        </TouchableOpacity>
       </View>
 
       <ConnectionStatus isConnected={isConnected} statusMessage={statusMessage} />
@@ -115,6 +139,11 @@ const styles = StyleSheet.create<Styles>({
     borderBottomColor: '#e1e5e9',
     alignItems: 'center',
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -125,6 +154,27 @@ const styles = StyleSheet.create<Styles>({
     color: '#007AFF',
     marginTop: 4,
     textDecorationLine: 'underline',
+  },
+  copyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 6,
+  },
+  copyText: {
+    fontSize: 13,
+    color: '#666',
+  },
+  badge: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
   },
 })
 

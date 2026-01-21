@@ -1,4 +1,4 @@
-const EventEmitter = eval('require')('eventemitter3')
+import EventEmitter from 'eventemitter3'
 
 export interface SubscriptionParams {
   [key: string]: any

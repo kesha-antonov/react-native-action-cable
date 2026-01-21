@@ -1,15 +1,23 @@
-// Conditional import of react-native AppState
-// We use require here because react-native may not be available in all environments
-let AppState: any
+// AppState for React Native - fallback to mock for web environments
+interface AppStateStatic {
+  currentState: string
+  addEventListener: (type: string, listener: () => void) => { remove: () => void }
+}
+
+let AppState: AppStateStatic = {
+  currentState: 'active',
+  addEventListener: () => ({ remove: () => {} }),
+}
+
+// Try to use React Native's AppState if available
 try {
-  const { AppState: RNAppState } = eval('require')('react-native')
-  AppState = RNAppState
+
+  const RN = (globalThis as { require?: (id: string) => { AppState?: AppStateStatic } }).require?.('react-native')
+  if (RN?.AppState) {
+    AppState = RN.AppState
+  }
 } catch {
   // React Native not available, use mock
-  AppState = {
-    currentState: 'active',
-    addEventListener: () => ({ remove: () => {} }),
-  }
 }
 
 const APP_STATE_ACTIVE = 'active'
