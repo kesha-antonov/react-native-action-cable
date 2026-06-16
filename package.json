@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "bump": "npm version patch",
-    "publish": "npm publish",
+    "release": "npm publish",
     "prepare": "husky"
   },
   "repository": {
