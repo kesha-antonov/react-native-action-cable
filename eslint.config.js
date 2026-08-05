@@ -8,6 +8,8 @@ module.exports = [
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
+      '**/coverage/**',
+      '**/.yarn/**',
       '**/*.d.ts',
       'examples/**/yarn.lock',
     ],

@@ -2,6 +2,10 @@ node_modules
 *.cjs
 .DS_Store
 
+# Yarn 4 local artifacts (the version is pinned via packageManager + Corepack)
+.yarn/
+.pnp.*
+
 # Jest
 coverage
 
