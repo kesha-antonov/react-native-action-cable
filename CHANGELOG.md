@@ -9,6 +9,10 @@
 - **Node:** `.nvmrc` now pins the version actually in use (v24.3.0) instead of the long stale v13.8.0; CI reads it
 - ESLint no longer walks generated coverage output
 
+### 📱 Examples
+
+- Every example runs on Expo SDK 57 / React Native 0.86 - the New Architecture (Fabric + bridgeless), verified at runtime on a simulator. React Native 0.82 removed the legacy architecture, so there is no arch flag to set; the stale SDK 54 prebuilds that still carried `newArchEnabled` were dropped
+
 ### 🔄 Rails Parity
 
 Synced `lib/action_cable` against Rails `main` (`actioncable/app/javascript/action_cable`):

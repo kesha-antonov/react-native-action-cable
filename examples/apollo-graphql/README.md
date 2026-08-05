@@ -4,6 +4,9 @@ This example demonstrates how to integrate `@kesha-antonov/react-native-action-c
 
 ## Overview
 
+Built with Expo SDK 57 on the New Architecture (Fabric + bridgeless) - React
+Native 0.82 removed the legacy architecture, so there is no flag to set.
+
 This integration allows you to use GraphQL subscriptions over ActionCable with Apollo Client, providing a seamless way to handle real-time data in your React Native app with a Rails backend.
 
 ## Key Components

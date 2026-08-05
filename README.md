@@ -23,7 +23,7 @@
 - 📡 **Channel Subscriptions** - Subscribe to multiple ActionCable channels
 - 🔄 **Auto-Reconnect** - Automatically reconnects when connection is lost
 - 🔐 **Custom Headers** - Support for authentication and dynamic headers
-- 📱 **React Native Ready** - Works without `window` object polyfills
+- 📱 **React Native Ready** - Works without `window` object polyfills, on the New Architecture (pure JS, no native module)
 - 🛡️ **Connection Reuse** - Prevent duplicate connections during hot reloads
 - ⚡ **TypeScript** - Full TypeScript support included
 

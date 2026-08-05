@@ -10,9 +10,14 @@ This is the React Native frontend application for the ActionCable chat app, buil
 - Messages typed while offline are queued and delivered on reconnect
 - Username support
 - Cross-platform (iOS/Android/Web)
-- Built with Expo SDK 57
+- Built with Expo SDK 57 on the New Architecture (Fabric + bridgeless)
 
 ## Setup
+
+> **Architecture:** React Native 0.82 dropped the legacy architecture, so this app
+> runs on the New Architecture with nothing to configure - `RCT_NEW_ARCH_ENABLED=0`
+> and the `newArchEnabled` app config key are no longer supported. Verified at
+> runtime: `nativeFabricUIManager` is present and `RN$Bridgeless` is `true`.
 
 ### Prerequisites
 
