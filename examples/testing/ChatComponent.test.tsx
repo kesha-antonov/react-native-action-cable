@@ -54,21 +54,25 @@ describe('ChatComponent', () => {
     mockCable.channel.mockReturnValue(mockChannel)
   })
 
-  it('should render with correct initial state', () => {
-    const { getByText } = render(<ChatComponent chatId={1} userId={2} />)
+  it('should render with correct initial state', async () => {
+    const { getByText } = await render(<ChatComponent chatId={1} userId={2} />)
 
     expect(getByText('Connection Status: Disconnected')).toBeTruthy()
     expect(getByText('Messages: 0')).toBeTruthy()
   })
 
   it('should create ActionCable consumer with correct URL', () => {
-    render(<ChatComponent chatId={1} userId={2} />)
+    // The component builds its consumer at module scope, so re-import the
+    // module to observe that call
+    jest.isolateModules(() => {
+      require('./ChatComponent')
+    })
 
     expect(mockActionCable.createConsumer).toHaveBeenCalledWith('ws://localhost:3000/cable')
   })
 
   it('should create subscription with correct parameters', async () => {
-    render(<ChatComponent chatId={1} userId={2} />)
+    await render(<ChatComponent chatId={1} userId={2} />)
 
     await waitFor(() => {
       expect(mockActionCable.createConsumer('').subscriptions.create).toHaveBeenCalledWith({
@@ -80,7 +84,7 @@ describe('ChatComponent', () => {
   })
 
   it('should set up channel with correct name', async () => {
-    render(<ChatComponent chatId={1} userId={2} />)
+    await render(<ChatComponent chatId={1} userId={2} />)
 
     await waitFor(() => {
       expect(mockCable.setChannel).toHaveBeenCalledWith('chat_1_2', mockSubscription)
@@ -88,7 +92,7 @@ describe('ChatComponent', () => {
   })
 
   it('should register event listeners on channel', async () => {
-    render(<ChatComponent chatId={1} userId={2} />)
+    await render(<ChatComponent chatId={1} userId={2} />)
 
     await waitFor(() => {
       expect(mockSubscription.on).toHaveBeenCalledWith('received', expect.any(Function))
@@ -98,7 +102,7 @@ describe('ChatComponent', () => {
   })
 
   it('should handle connection events correctly', async () => {
-    const { getByText } = render(<ChatComponent chatId={1} userId={2} />)
+    const { getByText } = await render(<ChatComponent chatId={1} userId={2} />)
 
     // Simulate connection
     await waitFor(() => {
@@ -116,7 +120,7 @@ describe('ChatComponent', () => {
   })
 
   it('should handle received messages correctly', async () => {
-    const { getByText } = render(<ChatComponent chatId={1} userId={2} />)
+    const { getByText } = await render(<ChatComponent chatId={1} userId={2} />)
 
     // Simulate receiving a message
     await waitFor(() => {
@@ -136,10 +140,10 @@ describe('ChatComponent', () => {
     })
   })
 
-  it('should clean up channel on unmount', () => {
-    const { unmount } = render(<ChatComponent chatId={1} userId={2} />)
+  it('should clean up channel on unmount', async () => {
+    const { unmount } = await render(<ChatComponent chatId={1} userId={2} />)
 
-    unmount()
+    await unmount()
 
     expect(mockSubscription.removeListener).toHaveBeenCalledWith('received', expect.any(Function))
     expect(mockSubscription.removeListener).toHaveBeenCalledWith('connected', expect.any(Function))

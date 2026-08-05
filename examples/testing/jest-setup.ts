@@ -67,7 +67,7 @@ const createMockConnection = (): MockConnection => ({
 })
 
 // Mock consumer object
-const createMockConsumer = (): MockConsumer => ({
+const buildMockConsumer = (): MockConsumer => ({
   subscriptions: createMockSubscriptions(),
   connection: createMockConnection(),
   url: 'ws://localhost:3000/cable',
@@ -76,6 +76,13 @@ const createMockConsumer = (): MockConsumer => ({
   disconnect: jest.fn(),
   ensureActiveConnection: jest.fn(),
 })
+
+// The real ActionCable hands back one consumer per url, and components usually
+// create theirs at module scope. The mock mirrors that: every createConsumer
+// call returns the same consumer, so a test can reach the very object the
+// component under test is using.
+let sharedConsumer: MockConsumer | null = null
+const createMockConsumer = (): MockConsumer => (sharedConsumer ??= buildMockConsumer())
 
 // Mock ActionCable object (not a constructor, but an object with methods)
 const MockActionCable = {
@@ -91,15 +98,30 @@ const MockActionCable = {
   debugging: false,
 }
 
-// Mock Cable class
-const MockCable = jest.fn().mockImplementation((channels: Record<string, unknown> = {}) => ({
+// Mock Cable class - shared for the same reason as the consumer above
+const buildMockCable = (channels: Record<string, unknown>) => ({
   channels,
   channel: jest.fn().mockImplementation((name: string) => channels[name]),
   setChannel: jest.fn().mockImplementation((name: string, subscription: unknown) => {
     channels[name] = subscription
     return subscription
   }),
-}))
+})
+
+let sharedCable: ReturnType<typeof buildMockCable> | null = null
+const MockCable = jest.fn().mockImplementation((channels: Record<string, unknown> = {}) => {
+  return (sharedCable ??= buildMockCable(channels))
+})
+
+/**
+ * Drops the shared consumer and cable. Call it when a test needs a component to
+ * build a brand new one - not between ordinary tests, where the component under
+ * test still holds a reference to the current instances.
+ */
+const resetActionCableMocks = (): void => {
+  sharedConsumer = null
+  sharedCable = null
+}
 
 // Mock ActionCable and Cable for Jest tests
 jest.mock('@kesha-antonov/react-native-action-cable', () => ({
@@ -107,4 +129,4 @@ jest.mock('@kesha-antonov/react-native-action-cable', () => ({
   Cable: MockCable,
 }))
 
-export { MockActionCable, MockCable, createMockSubscription, createMockConsumer }
+export { MockActionCable, MockCable, createMockSubscription, createMockConsumer, resetActionCableMocks }

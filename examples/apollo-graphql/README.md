@@ -8,7 +8,7 @@ This integration allows you to use GraphQL subscriptions over ActionCable with A
 
 ## Key Components
 
-### 1. ActionCableLink.js
+### 1. ActionCableLink.ts
 
 This is an adapted version of the [graphql-ruby ActionCableLink](https://github.com/rmosolgo/graphql-ruby/blob/master/javascript_client/subscriptions/ActionCableLink.js) that works with the `@kesha-antonov/react-native-action-cable` package interface.
 
@@ -17,7 +17,7 @@ This is an adapted version of the [graphql-ruby ActionCableLink](https://github.
 - Manages connection lifecycle (connected, received, unsubscribed)
 - Integrates seamlessly with Apollo Link
 
-### 2. index.js (App Setup)
+### 2. index.tsx (App Setup)
 
 Shows how to configure Apollo Client with ActionCable for subscriptions while using HTTP for queries and mutations.
 
@@ -31,50 +31,62 @@ Shows how to configure Apollo Client with ActionCable for subscriptions while us
 First, install the required dependencies:
 
 ```bash
-npm install @kesha-antonov/react-native-action-cable apollo-client apollo-link apollo-link-http apollo-cache-inmemory graphql react-apollo apollo-utilities
+yarn add @kesha-antonov/react-native-action-cable @apollo/client graphql rxjs
 ```
+
+`rxjs` is a required peer dependency of Apollo Client 4 - its links are built on
+RxJS observables.
 
 ## Usage
 
 ### 1. Setup Apollo Client with ActionCable
 
-```javascript
-import { ActionCable, Cable } from '@kesha-antonov/react-native-action-cable';
-import { ApolloProvider } from 'react-apollo';
-import { ApolloClient } from 'apollo-client';
-import { ApolloLink } from 'apollo-link';
-import { createHttpLink } from 'apollo-link-http';
-import { getMainDefinition } from 'apollo-utilities';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import ActionCableLink from './ActionCableLink';
+```typescript
+import { ActionCable, Cable } from '@kesha-antonov/react-native-action-cable'
+import { ApolloClient, InMemoryCache, split } from '@apollo/client'
+import { HttpLink } from '@apollo/client/link/http'
+import { getMainDefinition } from '@apollo/client/utilities'
+import ActionCableLink from './ActionCableLink'
 
-const httpLink = createHttpLink({ uri: 'http://localhost:3000/graphql' });
-const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable');
-const cable = new Cable({});
+const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' })
+const actionCable = ActionCable.createConsumer('ws://localhost:3000/cable')
+const cable = new Cable({})
 
 const hasSubscriptionOperation = ({ query }) => {
-  const { kind, operation } = getMainDefinition(query);
-  return kind === 'OperationDefinition' && operation === 'subscription';
-};
+  const definition = getMainDefinition(query)
+  return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
+}
 
-const link = ApolloLink.split(
+const link = split(
   hasSubscriptionOperation,
-  new ActionCableLink({ actionCable, cable }),
+  ActionCableLink({ actionCable, cable }),
   httpLink
-);
+)
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache()
-});
+  cache: new InMemoryCache(),
+})
+```
+
+Wrap your app with the provider from `@apollo/client/react`:
+
+```typescript
+import { ApolloProvider } from '@apollo/client/react'
+
+const AppWithApollo = () => (
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+)
 ```
 
 ### 2. Use in React Component
 
-```javascript
+```typescript
 import React from 'react';
-import { useSubscription } from 'react-apollo';
-import { gql } from 'apollo-boost';
+import { useSubscription } from '@apollo/client/react';
+import { gql } from '@apollo/client';
 
 const MESSAGE_SUBSCRIPTION = gql`
   subscription MessageAdded {

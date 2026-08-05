@@ -4,10 +4,12 @@
   "private": true,
   "description": "Demo script for testing ActionCable integration",
   "scripts": {
-    "demo": "npx tsx demo.ts"
+    "demo": "tsx demo.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "~5.9.0"
+    "@types/node": "^26.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "~6.0.3"
   }
 }

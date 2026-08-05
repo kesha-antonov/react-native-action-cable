@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
@@ -11,8 +11,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "types": ["jest", "react", "node"]
+    "types": ["jest"]
   },
-  "include": ["*.ts", "*.tsx", "action-cable.d.ts"],
+  "include": ["*.ts", "*.tsx"],
   "exclude": ["node_modules"]
 }

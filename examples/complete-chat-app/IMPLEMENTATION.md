@@ -55,7 +55,7 @@ This implementation addresses issue #31: "Add complete example with simple rails
 
 1. **Validate**: Run `./validate-example.sh` to check setup
 2. **Backend**: `cd rails-backend && bundle install && bundle exec rails server`
-3. **Frontend**: `cd react-native-frontend && npm install && npm run android`
+3. **Frontend**: `cd react-native-frontend && yarn install && yarn android`
 4. **Test**: Use the chat interface for real-time messaging
 
 ## Integration with Main Project

@@ -1,16 +1,11 @@
-import { ApolloLink, Observable, Operation, FetchResult } from '@apollo/client'
+import { ApolloLink, Observable } from '@apollo/client'
+import type { FetchResult, Operation } from '@apollo/client'
 import { print } from 'graphql'
-import { Cable, Subscription as CableSubscription } from '@kesha-antonov/react-native-action-cable'
-
-interface ActionCableConsumer {
-  subscriptions: {
-    create: (params: Record<string, unknown>) => CableSubscription
-  }
-}
+import type { Cable, Consumer, Subscription } from '@kesha-antonov/react-native-action-cable'
 
 interface ActionCableLinkOptions {
   cable: Cable
-  actionCable: ActionCableConsumer
+  actionCable: Consumer
   connectionParams?: Record<string, unknown>
   channelName?: string
   actionName?: string
@@ -35,7 +30,7 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
       new Observable<FetchResult>(observer => {
         const channelId = Math.round(Date.now() + Math.random() * 100000).toString(16)
 
-        const channel = cable.setChannel(
+        const channel: Subscription = cable.setChannel(
           'GraphqlChannel', // channel name to which we will pass data from Rails app with `stream_from`
           actionCable.subscriptions.create({
             channel: channelName,
@@ -52,7 +47,7 @@ function ActionCableLink(options: ActionCableLinkOptions): ApolloLink {
               operationName: operation.operationName,
             })
           })
-          .on('received', function (_data: unknown, payload: unknown) {
+          .on('received', function (payload: unknown) {
             const typedPayload = payload as SubscriptionPayload
             if (typedPayload.result.data || typedPayload.result.errors) {
               observer.next(typedPayload.result as FetchResult)

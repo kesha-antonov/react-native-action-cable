@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
@@ -10,12 +10,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "baseUrl": ".",
-    "paths": {
-      "react": ["./node_modules/@types/react"],
-      "react-native": ["./node_modules/react-native"]
-    }
+    "isolatedModules": true
   },
   "include": [
     "*.ts",

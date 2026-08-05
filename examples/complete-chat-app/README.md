@@ -71,7 +71,7 @@ The Rails server will start on `http://localhost:3000` with ActionCable at `ws:/
 
 ```bash
 cd react-native-frontend
-npm install
+yarn install
 # For iOS
 npm run ios
 # For Android  
@@ -162,7 +162,7 @@ This example can be extended with:
 
 1. **Connection Failed**: Make sure Rails server is running on `http://localhost:3000`
 2. **Messages Not Appearing**: Check that both ActionCable and the React Native app are properly connected
-3. **Build Errors**: Ensure all dependencies are installed with `bundle install` and `npm install`
+3. **Build Errors**: Ensure all dependencies are installed with `bundle install` and `yarn install`
 
 ### Debug Mode
 
