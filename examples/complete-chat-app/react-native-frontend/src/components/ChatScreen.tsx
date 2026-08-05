@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Alert, ViewStyle, TextStyle, TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Alert, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useKeyboardState } from 'react-native-keyboard-controller'
 import * as Clipboard from 'expo-clipboard'
 import { Ionicons } from '@expo/vector-icons'
+import { Chat, InputToolbar, type IMessage } from '@kesha-antonov/react-native-chat'
 
 import ChatService from '../services/ChatService'
 import ConnectionStatus from './ConnectionStatus'
-import MessageList from './MessageList'
-import MessageInput from './MessageInput'
 
-const WEB_APP_URL = 'http://localhost:3000'
+const WEB_APP_URL = process.env.EXPO_PUBLIC_WEB_APP_URL ?? 'http://localhost:3000'
 
 interface MessageData {
   type: string
@@ -22,6 +22,7 @@ interface MessageData {
 
 interface Styles {
   container: ViewStyle
+  chat: ViewStyle
   header: ViewStyle
   headerRow: ViewStyle
   title: TextStyle
@@ -32,45 +33,79 @@ interface Styles {
   badgeText: TextStyle
 }
 
+/** Turns a ChatChannel broadcast into a message the chat UI understands. */
+function toChatMessage(data: MessageData): IMessage {
+  const username = data.username ?? 'Anonymous'
+
+  return {
+    _id: data.id ?? `${username}-${data.timestamp ?? Date.now()}`,
+    text: data.message ?? '',
+    createdAt: data.timestamp != null ? new Date(data.timestamp) : new Date(),
+    user: {
+      _id: username,
+      name: username,
+    },
+  }
+}
+
 const ChatScreen: React.FC = () => {
-  const [messages, setMessages] = useState<MessageData[]>([])
+  const insets = useSafeAreaInsets()
+  const isKeyboardVisible = useKeyboardState(state => state.isVisible)
+  const [messages, setMessages] = useState<IMessage[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
   const [username, setUsername] = useState('User' + Math.floor(Math.random() * 1000))
 
-  useEffect(() => {
-    // Initialize chat service
-    initializeChatService()
+  const handleNewMessage = useCallback((data: MessageData): void => {
+    if (data.type !== 'new_message') return
 
-    // Cleanup on unmount
-    return () => {
-      ChatService.disconnect()
-    }
+    const confirmed = toChatMessage(data)
+    setMessages(previous => {
+      // The server echoes our own message back - drop the optimistic copy
+      const withoutPending = previous.filter(
+        message => !(message.pending && message.text === confirmed.text && message.user._id === confirmed.user._id),
+      )
+
+      return Chat.append(withoutPending, [confirmed])
+    })
   }, [])
 
-  const initializeChatService = (): void => {
-    // Add listeners
-    ChatService.addMessageListener(handleNewMessage)
-    ChatService.addStatusListener(handleStatusChange)
-
-    // Connect to ActionCable
-    ChatService.connect()
-  }
-
-  const handleNewMessage = (data: MessageData): void => {
-    console.log('New message received:', data)
-    setMessages(prevMessages => [...prevMessages, data])
-  }
-
-  const handleStatusChange = (connected: boolean, message: string): void => {
-    console.log('Status changed:', connected, message)
+  const handleStatusChange = useCallback((connected: boolean, message: string): void => {
     setIsConnected(connected)
     setStatusMessage(message)
-  }
+  }, [])
 
-  const handleSendMessage = (message: string): void => {
-    ChatService.sendMessage(message, username)
-  }
+  useEffect(() => {
+    ChatService.addMessageListener(handleNewMessage)
+    ChatService.addStatusListener(handleStatusChange)
+    ChatService.connect()
+
+    return () => {
+      ChatService.removeMessageListener(handleNewMessage)
+      ChatService.removeStatusListener(handleStatusChange)
+      ChatService.disconnect()
+    }
+  }, [handleNewMessage, handleStatusChange])
+
+  // The server broadcasts every message back to all subscribers, including the
+  // sender, so a delivered message is appended by the broadcast. A message sent
+  // while the connection is down is queued by ChatService and shown as pending
+  // until the broadcast confirms it.
+  const handleSend = useCallback((outgoing: IMessage[] = []): void => {
+    outgoing.forEach(message => {
+      const isQueued = !ChatService.isConnected
+
+      ChatService.sendMessage(message.text, username)
+
+      if (isQueued) {
+        setMessages(previous => Chat.append(previous, [{
+          ...message,
+          user: { _id: username, name: username },
+          pending: true,
+        }]))
+      }
+    })
+  }, [username])
 
   const handleUsernameChange = (): void => {
     Alert.prompt(
@@ -101,7 +136,7 @@ const ChatScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>ActionCable Chat</Text>
@@ -120,9 +155,29 @@ const ChatScreen: React.FC = () => {
 
       <ConnectionStatus isConnected={isConnected} statusMessage={statusMessage} />
 
-      <MessageList messages={messages} />
-
-      <MessageInput onSendMessage={handleSendMessage} isConnected={isConnected} />
+      <View style={styles.chat}>
+        <Chat
+          messages={messages}
+          onSend={handleSend}
+          user={{ _id: username, name: username }}
+          textInputProps={{
+            // Always editable: anything typed while offline is queued and sent
+            // as soon as the connection is back
+            placeholder: isConnected ? 'Type your message...' : 'Type your message (will send once connected)...',
+          }}
+          // Short conversations start under the header and re-anchor to the
+          // bottom once the composer is focused
+          isAlignedTop="auto"
+          // Keep the composer clear of the home indicator, and drop that padding
+          // while the keyboard covers it
+          renderInputToolbar={props => (
+            <InputToolbar
+              {...props}
+              containerStyle={{ paddingBottom: isKeyboardVisible ? 0 : insets.bottom }}
+            />
+          )}
+        />
+      </View>
     </SafeAreaView>
   )
 }
@@ -131,6 +186,9 @@ const styles = StyleSheet.create<Styles>({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+  },
+  chat: {
+    flex: 1,
   },
   header: {
     padding: 16,

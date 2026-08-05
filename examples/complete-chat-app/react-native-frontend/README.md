@@ -5,11 +5,12 @@ This is the React Native frontend application for the ActionCable chat app, buil
 ## Features
 
 - Real-time messaging using `@kesha-antonov/react-native-action-cable`
-- Clean and simple chat interface
+- Chat UI from [`@kesha-antonov/react-native-chat`](https://github.com/kesha-antonov/react-native-chat) - bubbles, date separators, keyboard handling
 - Connection status indicator
+- Messages typed while offline are queued and delivered on reconnect
 - Username support
 - Cross-platform (iOS/Android/Web)
-- Built with Expo SDK 52
+- Built with Expo SDK 57
 
 ## Setup
 
@@ -31,12 +32,18 @@ yarn install
 
 Make sure the Rails backend is running on `http://localhost:3000`.
 
-If you need to change the backend URL, edit `src/services/ChatService.ts`:
+Pointing at another host or port needs no code change - the app reads two
+optional environment variables:
 
-```typescript
-// Change this line to your Rails server URL
-private WEBSOCKET_URL: string = 'ws://YOUR_BACKEND_URL/cable'
+```bash
+EXPO_PUBLIC_CABLE_URL=ws://192.168.0.10:3000/cable \
+EXPO_PUBLIC_WEB_APP_URL=http://192.168.0.10:3000 \
+  yarn start
 ```
+
+Use your machine's LAN address (not `localhost`) when running on a physical
+device. The defaults are `ws://localhost:3000/cable` and
+`http://localhost:3000`.
 
 ### 3. Run the App
 
@@ -69,14 +76,10 @@ react-native-frontend/
 │   └── index.tsx             # Home screen
 ├── src/
 │   ├── components/
-│   │   ├── ChatScreen.tsx    # Main chat screen
-│   │   ├── MessageList.tsx   # Message list component
-│   │   ├── MessageInput.tsx  # Message input component
+│   │   ├── ChatScreen.tsx    # Chat screen: header, status and the Chat UI
 │   │   └── ConnectionStatus.tsx # Connection indicator
-│   ├── services/
-│   │   └── ChatService.ts    # ActionCable service
-│   └── types/
-│       └── action-cable.d.ts # TypeScript declarations
+│   └── services/
+│       └── ChatService.ts    # ActionCable service
 ├── app.json                  # Expo configuration
 ├── babel.config.js           # Babel configuration
 ├── tsconfig.json             # TypeScript configuration

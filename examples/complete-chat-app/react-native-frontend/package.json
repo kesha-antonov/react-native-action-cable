@@ -16,27 +16,35 @@
     "rebuildNativeDeps:clean": "npx expo prebuild --clean",
     "freshAndroid": "npx expo prebuild --clean && npx expo run:android",
     "android": "npx expo run:android",
-    "ios": "npx expo run:ios"
+    "ios": "npx expo run:ios",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@expo/vector-icons": "^14.0.0",
+    "@expo/vector-icons": "^15.0.2",
     "@kesha-antonov/react-native-action-cable": "link:../../..",
-    "expo": "~54.0.0",
-    "expo-clipboard": "~8.0.0",
-    "expo-constants": "~18.0.0",
-    "expo-linking": "~8.0.0",
-    "expo-router": "~5.0.0",
-    "expo-status-bar": "~3.0.0",
-    "expo-system-ui": "^6.0.9",
-    "react": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.20.0"
+    "@kesha-antonov/react-native-chat": "^4.2.0",
+    "@shopify/flash-list": "2.0.2",
+    "expo": "~57.0.10",
+    "expo-clipboard": "~57.0.1",
+    "expo-constants": "~57.0.9",
+    "expo-font": "~57.0.1",
+    "expo-linking": "~57.0.5",
+    "expo-router": "~57.0.10",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.2",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-keyboard-controller": "1.21.9",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.0",
-    "@types/react": "~19.0.0",
-    "typescript": "~5.9.0"
+    "@babel/core": "^7.29.7",
+    "@types/react": "~19.2.0",
+    "typescript": "~6.0.3"
   },
   "private": true
 }
