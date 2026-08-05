@@ -222,17 +222,29 @@ class Connection {
       }
     },
 
-    close: (_event: any): void => {
-      this.log('WebSocket onclose event')
+    close: (event: any): void => {
+      this.log('WebSocket onclose event', event?.code, event?.reason)
       if (this.disconnected) return
       this.disconnected = true
       this.monitor.recordDisconnect()
-      this.subscriptions.notifyAll('disconnected', { willAttemptReconnect: this.monitor.isRunning() })
+      // React Native reports why a socket failed on the close event, not on the
+      // error event, so pass the reason along with the reconnect intent
+      this.subscriptions.notifyAll('disconnected', {
+        willAttemptReconnect: this.monitor.isRunning(),
+        code: event?.code,
+        reason: event?.reason,
+      })
     },
 
     error: (event: any): void => {
-      this.log('WebSocket onerror event')
-      this.subscriptions.notifyAll('error', event)
+      this.log('WebSocket onerror event', event)
+      // A WebSocket error event carries no detail of its own (React Native
+      // dispatches a bare Event), so give listeners something readable and
+      // keep the original event available as `error.event`
+      this.subscriptions.notifyAll('error', {
+        message: event?.message ?? 'WebSocket error',
+        event,
+      })
     },
   }
 }

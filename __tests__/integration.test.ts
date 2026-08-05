@@ -105,7 +105,7 @@ describe('ActionCable end to end', () => {
     const { consumer, channel, events } = subscribe()
 
     MockWebSocket.last.drop()
-    expect(events).toContainEqual(['disconnected', { willAttemptReconnect: true }])
+    expect(events).toContainEqual(['disconnected', expect.objectContaining({ willAttemptReconnect: true })])
 
     letTheMonitorReconnect()
 
@@ -150,7 +150,7 @@ describe('ActionCable end to end', () => {
 
     MockWebSocket.last.deliver({ type: 'disconnect', reason: 'unauthorized', reconnect: false })
 
-    expect(events).toContainEqual(['disconnected', { willAttemptReconnect: false }])
+    expect(events).toContainEqual(['disconnected', expect.objectContaining({ willAttemptReconnect: false })])
 
     letTheMonitorReconnect()
 
@@ -164,7 +164,7 @@ describe('ActionCable end to end', () => {
 
     MockWebSocket.last.fail(failure)
 
-    expect(events).toContainEqual(['error', failure])
+    expect(events).toContainEqual(['error', { message: 'network down', event: failure }])
   })
 
   it('keeps working when the server broadcasts unusual payloads', () => {

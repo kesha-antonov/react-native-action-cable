@@ -17,6 +17,16 @@ export interface ConnectedPayload {
 
 export interface DisconnectedPayload {
   willAttemptReconnect: boolean
+  /** WebSocket close code, when the platform reports one */
+  code?: number
+  /** Why the socket closed - React Native puts the failure reason here */
+  reason?: string
+}
+
+export interface SubscriptionError {
+  message: string
+  /** The original platform event, which usually carries no detail of its own */
+  event?: any
 }
 
 /**
@@ -78,7 +88,7 @@ class Subscription extends EventEmitter {
     this.emit('rejected')
   }
 
-  error = (error: any): void => {
+  error = (error: SubscriptionError | any): void => {
     this.emit('error', error)
   }
 

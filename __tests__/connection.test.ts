@@ -354,7 +354,7 @@ describe('Connection', () => {
 
       MockWebSocket.last.drop()
 
-      expect(subscriptions.notifyAll).toHaveBeenCalledWith('disconnected', { willAttemptReconnect: true })
+      expect(subscriptions.notifyAll).toHaveBeenCalledWith('disconnected', expect.objectContaining({ willAttemptReconnect: true }))
     })
 
     it('reports that no reconnect will be attempted once the monitor is stopped', () => {
@@ -363,7 +363,7 @@ describe('Connection', () => {
 
       connection.close({ allowReconnect: false })
 
-      expect(subscriptions.notifyAll).toHaveBeenCalledWith('disconnected', { willAttemptReconnect: false })
+      expect(subscriptions.notifyAll).toHaveBeenCalledWith('disconnected', expect.objectContaining({ willAttemptReconnect: false }))
     })
 
     it('notifies disconnected only once per socket', () => {
@@ -376,14 +376,38 @@ describe('Connection', () => {
       expect(subscriptions.notifyAll).toHaveBeenCalledTimes(1)
     })
 
-    it('forwards socket errors to every subscription', () => {
+    it('forwards socket errors to every subscription with a readable message', () => {
       const { connection, subscriptions } = buildConnection()
       connect(connection)
       const event = new Error('boom')
 
       MockWebSocket.last.fail(event)
 
-      expect(subscriptions.notifyAll).toHaveBeenCalledWith('error', event)
+      expect(subscriptions.notifyAll).toHaveBeenCalledWith('error', { message: 'boom', event })
+    })
+
+    it('describes an error event that carries no detail of its own', () => {
+      const { connection, subscriptions } = buildConnection()
+      connect(connection)
+      // React Native dispatches a bare Event on websocketFailed
+      const event = { type: 'error' }
+
+      MockWebSocket.last.fail(event)
+
+      expect(subscriptions.notifyAll).toHaveBeenCalledWith('error', { message: 'WebSocket error', event })
+    })
+
+    it('passes the close code and reason to disconnected listeners', () => {
+      const { connection, subscriptions } = buildConnection()
+      connect(connection)
+
+      MockWebSocket.last.onclose?.({ code: 1006, reason: 'Connection refused' })
+
+      expect(subscriptions.notifyAll).toHaveBeenCalledWith('disconnected', {
+        willAttemptReconnect: true,
+        code: 1006,
+        reason: 'Connection refused',
+      })
     })
   })
 })

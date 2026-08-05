@@ -16,6 +16,7 @@ export { default as INTERNAL } from './lib/action_cable/internal'
 export type {
   ConnectedPayload,
   DisconnectedPayload,
+  SubscriptionError,
   SubscriptionMixin,
   SubscriptionParams,
 } from './lib/action_cable/subscription'

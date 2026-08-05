@@ -146,7 +146,8 @@ channel.unsubscribe()
 |--------|-------------|
 | `on(event, callback)` | Subscribe to events: `received`, `connected`, `disconnected`, `rejected`, `error` |
 | `on('connected', cb)` | `cb({ reconnected })` - `reconnected` is `true` when the subscription came back after a dropped connection |
-| `on('disconnected', cb)` | `cb({ willAttemptReconnect })` - `false` when the connection was closed for good |
+| `on('disconnected', cb)` | `cb({ willAttemptReconnect, code, reason })` - `reason` is where React Native reports why the socket dropped |
+| `on('error', cb)` | `cb({ message, event })` - a readable message, with the original platform event attached |
 | `removeListener(event, callback)` | Remove event listener |
 | `perform(action, data)` | Send message to server |
 | `unsubscribe()` | Unsubscribe from channel |
@@ -191,9 +192,15 @@ const actionCable = ActionCable.getOrCreateConsumer('ws://localhost:3000/cable')
 <summary><strong>Error Handling</strong></summary>
 
 ```typescript
-channel.on('error', (error) => {
-  console.log('Connection error:', error)
+channel.on('error', ({ message, event }) => {
+  console.warn('Connection error:', message)
   // Handle: no internet, wrong URL, server down, auth failure
+  // `event` is the original platform event, if you need it
+})
+
+// React Native reports *why* a socket dropped on the close event
+channel.on('disconnected', ({ willAttemptReconnect, reason }) => {
+  console.log(reason, willAttemptReconnect ? '- retrying' : '- gave up')
 })
 ```
 
