@@ -1,4 +1,5 @@
 <p align="center">
+  <a href="https://github.com/kesha-antonov/react-native-action-cable/actions/workflows/ci.yml"><img src="https://github.com/kesha-antonov/react-native-action-cable/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://badge.fury.io/js/@kesha-antonov%2Freact-native-action-cable"><img src="https://badge.fury.io/js/@kesha-antonov%2Freact-native-action-cable.svg" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@kesha-antonov/react-native-action-cable"><img src="https://img.shields.io/npm/dm/@kesha-antonov/react-native-action-cable.svg" alt="npm downloads"></a>
   <a href="https://npm-stat.com/charts.html?package=%40kesha-antonov%2Freact-native-action-cable&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-580k-blue.svg" alt="total npm downloads"></a>
@@ -144,6 +145,8 @@ channel.unsubscribe()
 | Method | Description |
 |--------|-------------|
 | `on(event, callback)` | Subscribe to events: `received`, `connected`, `disconnected`, `rejected`, `error` |
+| `on('connected', cb)` | `cb({ reconnected })` - `reconnected` is `true` when the subscription came back after a dropped connection |
+| `on('disconnected', cb)` | `cb({ willAttemptReconnect })` - `false` when the connection was closed for good |
 | `removeListener(event, callback)` | Remove event listener |
 | `perform(action, data)` | Send message to server |
 | `unsubscribe()` | Unsubscribe from channel |
@@ -228,6 +231,29 @@ function useActionCable(channelName: string, params: Record<string, unknown>) {
 </details>
 
 <details>
+<summary><strong>Rails style channel mixins</strong></summary>
+
+`subscriptions.create` accepts an optional mixin of callbacks, exactly like Rails
+ActionCable, which makes existing Rails channel code portable:
+
+```typescript
+const channel = actionCable.subscriptions.create({ channel: 'ChatChannel', roomId: 1 }, {
+  connected ({ reconnected }) { console.log('Connected!', reconnected) },
+  disconnected ({ willAttemptReconnect }) { console.log('Disconnected', willAttemptReconnect) },
+  received (data) { console.log('Received:', data) },
+
+  speak (text: string) { this.perform('speak', { text }) },
+})
+
+channel.speak('Hello!')
+```
+
+A mixin replaces the event emitter callbacks it defines - use either style, not both
+for the same event.
+
+</details>
+
+<details>
 <summary><strong>Custom Action Events</strong></summary>
 
 Messages with `data.action` attribute are emitted as separate events:
@@ -281,6 +307,18 @@ jest.mock('@kesha-antonov/react-native-action-cable', () => ({
 
 See [examples/testing](examples/testing) for complete testing examples.
 
+### Testing this library
+
+The library itself is covered by a Jest suite in [`__tests__`](__tests__), which
+drives the real connection code against a WebSocket double that behaves like a
+Rails ActionCable server:
+
+```bash
+yarn test           # run the suite
+yarn test:coverage  # run it with a coverage report
+yarn typecheck      # type-check the library and the tests
+```
+
 ---
 
 ## 📂 Examples
@@ -305,7 +343,9 @@ See [examples/testing](examples/testing) for complete testing examples.
 
 ## 👏 Credits
 
-Based on [action-cable-react](https://github.com/schneidmaster/action-cable-react). Code in `lib/action_cable` is adapted from Rails ActionCable.
+Based on [action-cable-react](https://github.com/schneidmaster/action-cable-react). Code in `lib/action_cable` is adapted from [Rails ActionCable](https://github.com/rails/rails/tree/main/actioncable/app/javascript/action_cable), last synced with Rails `main` in August 2026.
+
+Where it differs on purpose: React Native `AppState` drives reconnects instead of `document.visibilitychange`, the `WebSocket` implementation and request headers are injectable, subscriptions emit `error` events, incoming React Native Blobs are released, and urls are resolved without a `document`.
 
 > Please note that this project is maintained in free time. If you find it helpful, please consider [becoming a sponsor](https://github.com/sponsors/kesha-antonov).
 

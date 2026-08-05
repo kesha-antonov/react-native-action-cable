@@ -1,5 +1,44 @@
 # Changelog
 
+## Unreleased
+
+### 📦 Dependencies & Infrastructure
+
+- **GitHub Actions CI:** lint, typecheck and tests run on every push to `master` and every pull request, with the test suite on Node 20, 22 and 24
+- **Yarn 4:** upgraded from Yarn 3.4.1 to 4.18.0, pinned through `packageManager` so Corepack resolves it (run `corepack enable` once if `yarn` is not already managed by it)
+- **Node:** `.nvmrc` now pins the version actually in use (v24.3.0) instead of the long stale v13.8.0; CI reads it
+- ESLint no longer walks generated coverage output
+
+### 🔄 Rails Parity
+
+Synced `lib/action_cable` against Rails `main` (`actioncable/app/javascript/action_cable`):
+
+- **Safari 15.1+ fix:** `connection.close()` no longer closes a socket that is still connecting, matching [rails/rails#45738](https://github.com/rails/rails/issues/45738)
+- **Channel mixins:** `subscriptions.create(channel, mixin)` accepts a Rails style object of callbacks (`received`, `connected`, `disconnected`, custom actions), so Rails ActionCable code ports over as is. The `channel.on(...)` event emitter API is unchanged when no mixin is given
+- **SubscriptionGuarantor:** retry scheduling now matches Rails - `startGuaranteeing`/`stopGuaranteeing` (previously `startRetrying`/`stopRetrying`), the timer restarts on every `guarantee()`, and retries stop when the subscribe command cannot be sent (a reconnect reloads subscriptions anyway) instead of polling every 500 ms while offline. The guarantor now logs like Rails does
+- **Exports:** `Connection`, `ConnectionMonitor`, `Consumer`, `Subscription`, `Subscriptions`, `SubscriptionGuarantor`, `INTERNAL` and `createWebSocketURL` are exported from the package entry point, as Rails exports them, together with the public types
+- `connection.open()` tolerates a consumer without `subprotocols`
+
+Intentional differences from Rails are unchanged: React Native `AppState` instead of `document.visibilitychange`, an injectable `WebSocket` implementation and request headers, `error` events on subscriptions, React Native Blob release on incoming messages, and string based url resolution (Rails resolves relative urls through `document.createElement('a')`).
+
+### 🧪 Tests
+
+- Added a Jest test suite (`yarn test`) covering the connection, connection monitor, consumer, subscriptions, subscription guarantor and the public `ActionCable`/`Cable` API, plus end-to-end flows against an ActionCable server double. Every bug fixed below has a regression test
+
+### 🐛 Bug Fixes
+
+- **Connection state detection:** `getState()` resolved `readyState` against the *global* `WebSocket` constants only. With a custom WebSocket class (`ActionCable.WebSocket = ...`) or in environments without a global `WebSocket`, the connection was permanently reported as closed - `send()` always returned `false` and every subscription opened another socket
+- **App foreground reconnect:** React Native's `AppState` was looked up via `globalThis.require`, which never resolves under Metro, so the monitor never reconnected when the app returned to the foreground
+- **Consumer reuse:** `getOrCreateConsumer()` disconnected and replaced the cached consumer whenever it was not currently connected, silently killing the subscriptions the app was holding (regression on transient network drops and on two calls made before the first connection)
+- **Null data crash:** `received(null)` crashed again after the TypeScript rewrite (regression of v1.1.2); string and array payloads crashed too
+- **Callback payloads:** `connected` now receives `{ reconnected }` and `disconnected` receives `{ willAttemptReconnect }` - both were computed but dropped before reaching the listener
+- **Data mutation:** `perform()` and `received()` no longer mutate the object passed by the caller / broadcast by the server (throws on frozen objects, and leaks `action` between subscriptions sharing an identifier)
+- **Stale reconnect loop:** a reopened connection was compared against the previous connection's last-message timestamp, so it could be considered stale and reopened immediately
+- **Reconnect after disconnect:** a foreground event fired just before `consumer.disconnect()` could reopen the connection 200 ms later
+- **URL scheme:** `http` → `ws` rewriting now only touches the scheme instead of the first `http` occurring anywhere in the URL
+
+---
+
 ## v2.0.0
 
 ### ⚠️ Breaking Changes
