@@ -2,6 +2,9 @@ node_modules
 *.cjs
 .DS_Store
 
+# Jest
+coverage
+
 # Expo generated native folders
 examples/**/ios/
 examples/**/android/

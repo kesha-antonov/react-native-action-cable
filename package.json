@@ -4,7 +4,10 @@
   "description": "Use Rails ActionCable channels with React Native for real-time WebSocket communication.",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "bump": "npm version patch",
@@ -41,12 +44,16 @@
   },
   "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
   "devDependencies": {
+    "@jest/globals": "^30.4.1",
     "@stylistic/eslint-plugin": "^4.2.0",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
     "eslint": "^9.27.0",
     "husky": "^9.1.0",
+    "jest": "^30.4.2",
     "lint-staged": "^15.5.0",
+    "ts-jest": "^29.4.12",
     "typescript": "^5.9.3"
   },
   "dependencies": {
