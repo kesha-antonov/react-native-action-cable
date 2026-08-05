@@ -5,6 +5,9 @@ const { message_types, protocols } = INTERNAL
 
 const supportedProtocols = protocols.slice(0, -1)
 
+// Standard WebSocket readyState values, in numeric order (0..3)
+const readyStateNames = ['connecting', 'open', 'closing', 'closed'] as const
+
 export interface Consumer {
   url: string
   headers: any
@@ -56,7 +59,7 @@ class Connection {
       this.log(`Attempted to open WebSocket, but existing socket is ${this.getState()}`)
       return false
     } else {
-      const socketProtocols = [...protocols, ...this.consumer.subprotocols]
+      const socketProtocols = [...protocols, ...(this.consumer.subprotocols || [])]
       this.log(`Opening WebSocket, current state is ${this.getState()}, subprotocols: ${socketProtocols}`)
       if (this.webSocket) {
         this.uninstallEventHandlers()
@@ -72,7 +75,9 @@ class Connection {
     if (!allowReconnect) {
       this.monitor.stop()
     }
-    if (this.webSocket && this.isActive()) {
+    // Avoid closing websockets in a "connecting" state due to Safari 15.1+ bug.
+    // See: https://github.com/rails/rails/issues/43835#issuecomment-1002288478
+    if (this.isOpen()) {
       this.webSocket.close()
     }
   }
@@ -121,16 +126,29 @@ class Connection {
   }
 
   getState = (): string | null => {
-    if (this.webSocket?.readyState != null) {
-      const ws = (globalThis as any).WebSocket || {}
-      const entries = Object.keys(ws).map(key => [key, ws[key]])
-      for (const [state, value] of entries) {
-        if (value === this.webSocket.readyState) {
-          return state.toLowerCase()
+    const socket = this.webSocket
+    const readyState = socket?.readyState
+    if (readyState == null) {
+      return null
+    }
+
+    // Resolve the numeric readyState against the constants of the WebSocket
+    // implementation actually in use. It is not necessarily the global one:
+    // a custom class can be injected via `ActionCable.WebSocket`, and some
+    // environments (React Native release builds, Node without a global
+    // WebSocket) expose no global at all.
+    const sources = [socket, socket.constructor, this.WebSocket, (globalThis as any).WebSocket]
+    for (const source of sources) {
+      if (source == null) continue
+      for (const name of readyStateNames) {
+        if (source[name.toUpperCase()] === readyState) {
+          return name
         }
       }
     }
-    return null
+
+    // Fall back to the numbering mandated by the WebSocket spec.
+    return readyStateNames[readyState] ?? null
   }
 
   installEventHandlers = (): void => {

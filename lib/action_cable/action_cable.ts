@@ -49,17 +49,15 @@ const ActionCable: ActionCableInterface = {
     // Create a cache key based on URL and headers
     const cacheKey = this._createCacheKey(url, headers)
 
-    // Return existing consumer if it exists and is active
-    if (this._consumers[cacheKey]?.connection.isActive()) {
+    // Return the cached consumer, keeping its subscriptions intact. It may be
+    // temporarily disconnected (network drop, or not connected yet because no
+    // subscription has been created) - its monitor reconnects on its own, and
+    // replacing it here would silently kill the subscriptions the app holds.
+    const cached = this._consumers[cacheKey]
+    if (cached) {
       this.log('Reusing existing consumer for', url)
-      return this._consumers[cacheKey]
-    }
-
-    // Clean up disconnected consumer if exists
-    if (this._consumers[cacheKey] && !this._consumers[cacheKey].connection.isActive()) {
-      this.log('Cleaning up disconnected consumer for', url)
-      this._consumers[cacheKey].disconnect()
-      delete this._consumers[cacheKey]
+      cached.ensureActiveConnection()
+      return cached
     }
 
     // Create new consumer and cache it
@@ -94,7 +92,7 @@ const ActionCable: ActionCableInterface = {
   },
 
   stopDebugging(): void {
-    this.debugging = null
+    this.debugging = false
   },
 
   log(...messages: any[]): void {

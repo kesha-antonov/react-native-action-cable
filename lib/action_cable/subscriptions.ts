@@ -1,4 +1,5 @@
 import Subscription from './subscription'
+import type { SubscriptionMixin } from './subscription'
 import SubscriptionGuarantor from './subscription_guarantor'
 
 export interface ChannelParams {
@@ -28,13 +29,13 @@ class Subscriptions {
   constructor(consumer: Consumer, log: LogFunction) {
     this.consumer = consumer
     this.log = log
-    this.guarantor = new SubscriptionGuarantor(this)
+    this.guarantor = new SubscriptionGuarantor(this, log)
   }
 
-  create = (channelName: string | ChannelParams): Subscription => {
+  create = (channelName: string | ChannelParams, mixin?: SubscriptionMixin): Subscription => {
     const channel = channelName
     const params = typeof channel === 'object' ? channel : { channel }
-    const subscription = new Subscription(this.consumer, params)
+    const subscription = new Subscription(this.consumer, params, mixin)
     return this.add(subscription)
   }
 

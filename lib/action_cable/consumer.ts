@@ -60,18 +60,35 @@ class Consumer implements ConsumerInterface {
   }
 
   createWebSocketURL(url: UrlProvider): string {
-    const resolvedUrl = typeof url === 'function' ? url() : url
-
-    if (resolvedUrl && !/^wss?:/i.test(resolvedUrl)) {
-      return resolvedUrl.replace('http', 'ws')
-    }
-
-    return resolvedUrl
+    return createWebSocketURL(url)
   }
 
   createHeaders(headers: HeadersProvider): any {
-    return typeof headers === 'function' ? headers() : headers
+    return createHeaders(headers)
   }
+}
+
+/**
+ * Resolves a url (or url function) to a WebSocket url.
+ *
+ * Rails resolves relative urls through `document.createElement('a')`; there is
+ * no document in React Native, so the scheme is rewritten directly and the url
+ * is expected to be absolute.
+ */
+export function createWebSocketURL(url: UrlProvider): string {
+  const resolvedUrl = typeof url === 'function' ? url() : url
+
+  // Only rewrite the scheme - a plain `replace('http', 'ws')` would also
+  // mangle the first "http" occurring anywhere else in the URL
+  if (resolvedUrl && !/^wss?:/i.test(resolvedUrl)) {
+    return resolvedUrl.replace(/^http(s?):/i, (_match, secure: string) => (secure ? 'wss:' : 'ws:'))
+  }
+
+  return resolvedUrl
+}
+
+export function createHeaders(headers: HeadersProvider): any {
+  return typeof headers === 'function' ? headers() : headers
 }
 
 export default Consumer

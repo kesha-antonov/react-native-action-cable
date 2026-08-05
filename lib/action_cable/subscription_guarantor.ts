@@ -7,43 +7,46 @@ export interface Subscriptions {
 }
 
 /**
- * SubscriptionGuarantor ensures subscriptions are reliably established.
- * It retries subscription requests when the server does not confirm them within a timeout.
+ * Responsible for ensuring channel subscribe command is confirmed, retrying
+ * until confirmation is received. Internal class, not intended for direct user
+ * manipulation.
  */
 class SubscriptionGuarantor {
   static readonly retryInterval = 500
 
   subscriptions: Subscriptions
+  log: LogFunction
   pendingSubscriptions: Subscription[] = []
   retryTimeout?: ReturnType<typeof setTimeout>
 
-  constructor(subscriptions: Subscriptions) {
+  constructor(subscriptions: Subscriptions, log: LogFunction = () => {}) {
     this.subscriptions = subscriptions
+    this.log = log
   }
 
   guarantee = (subscription: Subscription): void => {
     if (!this.pendingSubscriptions.includes(subscription)) {
+      this.log(`SubscriptionGuarantor guaranteeing ${subscription.identifier}`)
       this.pendingSubscriptions.push(subscription)
+    } else {
+      this.log(`SubscriptionGuarantor already guaranteeing ${subscription.identifier}`)
     }
-    this.startRetrying()
+    this.startGuaranteeing()
   }
 
   forget = (subscription: Subscription): void => {
+    this.log(`SubscriptionGuarantor forgetting ${subscription.identifier}`)
     this.pendingSubscriptions = this.pendingSubscriptions.filter(s => s !== subscription)
   }
 
   // Private
 
-  startRetrying = (): void => {
-    if (!this.retryTimeout) {
-      this.retryTimeout = setTimeout(() => {
-        this.retryTimeout = undefined
-        this.retrySubscribing()
-      }, SubscriptionGuarantor.retryInterval)
-    }
+  startGuaranteeing = (): void => {
+    this.stopGuaranteeing()
+    this.retrySubscribing()
   }
 
-  stopRetrying = (): void => {
+  stopGuaranteeing = (): void => {
     if (this.retryTimeout) {
       clearTimeout(this.retryTimeout)
       this.retryTimeout = undefined
@@ -51,12 +54,15 @@ class SubscriptionGuarantor {
   }
 
   retrySubscribing = (): void => {
-    for (const subscription of this.pendingSubscriptions) {
-      this.subscriptions.subscribe(subscription)
-    }
-    if (this.pendingSubscriptions.length > 0) {
-      this.startRetrying()
-    }
+    this.retryTimeout = setTimeout(() => {
+      this.retryTimeout = undefined
+      if (typeof this.subscriptions?.subscribe === 'function') {
+        for (const subscription of this.pendingSubscriptions) {
+          this.log(`SubscriptionGuarantor resubscribing ${subscription.identifier}`)
+          this.subscriptions.subscribe(subscription)
+        }
+      }
+    }, SubscriptionGuarantor.retryInterval)
   }
 }
 
