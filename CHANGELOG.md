@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## v3.0.0 (2026-08-05)
+
+### ⚠️ Breaking Changes
+
+- **Error payload:** `error` listeners used to receive the raw platform event. They now receive `{ message, event }` - a readable message with the original event still attached as `error.event`. On React Native the old payload was a bare `Event` carrying no detail, so there was nothing usable to read off it; anywhere you did, switch to `error.event`
+- **SubscriptionGuarantor:** `startRetrying`/`stopRetrying` are now `startGuaranteeing`/`stopGuaranteeing`, matching Rails. This is an internal class - only relevant if you drove it directly
 
 ### 📦 Dependencies & Infrastructure
 
@@ -12,6 +17,10 @@
 ### 📱 Examples
 
 - Every example runs on Expo SDK 57 / React Native 0.86 - the New Architecture (Fabric + bridgeless), verified at runtime on a simulator. React Native 0.82 removed the legacy architecture, so there is no arch flag to set; the stale SDK 54 prebuilds that still carried `newArchEnabled` were dropped
+- All examples updated to their latest dependencies: Apollo Client 4, Jest 30, React Native Testing Library 14, Rails 8.1.3.1 with puma 8 and redis 6
+- The chat app is rebuilt on [`@kesha-antonov/react-native-chat`](https://github.com/kesha-antonov/react-native-chat) and queues messages typed while the connection is down, delivering them on reconnect
+- The Apollo example is a runnable Expo app again (it pointed at an expo-router entry with no `app/` directory) and is migrated to Apollo Client 4
+- The testing example had no Jest config at all; it now runs on `@react-native/jest-preset` and passes
 
 ### 🔄 Rails Parity
 
@@ -36,7 +45,6 @@ Intentional differences from Rails are unchanged: React Native `AppState` instea
 - **Consumer reuse:** `getOrCreateConsumer()` disconnected and replaced the cached consumer whenever it was not currently connected, silently killing the subscriptions the app was holding (regression on transient network drops and on two calls made before the first connection)
 - **Null data crash:** `received(null)` crashed again after the TypeScript rewrite (regression of v1.1.2); string and array payloads crashed too
 - **Callback payloads:** `connected` now receives `{ reconnected }` and `disconnected` receives `{ willAttemptReconnect, code, reason }` - the first two were computed but dropped before reaching the listener, and the close code/reason is where React Native reports *why* a socket dropped
-- **Error payloads:** `error` listeners used to receive the raw platform event, which on React Native is a bare `Event` carrying no detail (`{"_defaultPrevented":false,"_type":"error",...}`). They now receive `{ message, event }` with the original event still attached
 - **Data mutation:** `perform()` and `received()` no longer mutate the object passed by the caller / broadcast by the server (throws on frozen objects, and leaks `action` between subscriptions sharing an identifier)
 - **Stale reconnect loop:** a reopened connection was compared against the previous connection's last-message timestamp, so it could be considered stale and reopened immediately
 - **Reconnect after disconnect:** a foreground event fired just before `consumer.disconnect()` could reopen the connection 200 ms later
