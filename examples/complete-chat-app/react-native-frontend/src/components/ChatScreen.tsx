@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Alert, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useKeyboardState } from 'react-native-keyboard-controller'
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller'
+import Animated, { useAnimatedStyle } from 'react-native-reanimated'
 import * as Clipboard from 'expo-clipboard'
 import { Ionicons } from '@expo/vector-icons'
 import { Chat, InputToolbar, type IMessage } from '@kesha-antonov/react-native-chat'
@@ -23,6 +24,7 @@ interface MessageData {
 interface Styles {
   container: ViewStyle
   chat: ViewStyle
+  toolbar: ViewStyle
   header: ViewStyle
   headerRow: ViewStyle
   title: TextStyle
@@ -50,7 +52,14 @@ function toChatMessage(data: MessageData): IMessage {
 
 const ChatScreen: React.FC = () => {
   const insets = useSafeAreaInsets()
-  const isKeyboardVisible = useKeyboardState(state => state.isVisible)
+  // The composer clears the home indicator while the keyboard is down. Tracking
+  // the keyboard animation rather than a visible/hidden flag keeps the padding
+  // shrinking in step with the keyboard, instead of dropping the composer to
+  // the bottom edge for the length of the animation.
+  const { progress } = useReanimatedKeyboardAnimation()
+  const toolbarStyle = useAnimatedStyle(() => ({
+    paddingBottom: insets.bottom * (1 - progress.value),
+  }))
   const [messages, setMessages] = useState<IMessage[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
@@ -160,21 +169,18 @@ const ChatScreen: React.FC = () => {
           messages={messages}
           onSend={handleSend}
           user={{ _id: username, name: username }}
-          textInputProps={{
-            // Always editable: anything typed while offline is queued and sent
-            // as soon as the connection is back
-            placeholder: isConnected ? 'Type your message...' : 'Type your message (will send once connected)...',
-          }}
+          // Always editable: anything typed while offline is queued and sent
+          // as soon as the connection is back
+          textInputProps={{ placeholder: 'Type your message...' }}
           // Short conversations start under the header and re-anchor to the
           // bottom once the composer is focused
           isAlignedTop="auto"
-          // Keep the composer clear of the home indicator, and drop that padding
-          // while the keyboard covers it
+          // The padding goes on a wrapper rather than InputToolbar's
+          // containerStyle, which the toolbar also forwards to the send button
           renderInputToolbar={props => (
-            <InputToolbar
-              {...props}
-              containerStyle={{ paddingBottom: isKeyboardVisible ? 0 : insets.bottom }}
-            />
+            <Animated.View style={[styles.toolbar, toolbarStyle]}>
+              <InputToolbar {...props} />
+            </Animated.View>
           )}
         />
       </View>
@@ -189,6 +195,9 @@ const styles = StyleSheet.create<Styles>({
   },
   chat: {
     flex: 1,
+  },
+  toolbar: {
+    backgroundColor: 'white',
   },
   header: {
     padding: 16,
