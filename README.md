@@ -5,6 +5,7 @@
   <a href="https://npm-stat.com/charts.html?package=%40kesha-antonov%2Freact-native-action-cable&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-580k-blue.svg" alt="total npm downloads"></a>
   <a href="https://www.npmjs.com/package/@kesha-antonov/react-native-action-cable"><img src="https://img.shields.io/npm/dt/@kesha-antonov/react-native-action-cable.svg?label=18-months%20downloads" alt="npm downloads (last 18 months)"></a>
   <a href="https://github.com/kesha-antonov/react-native-action-cable/network/dependents"><img src="https://img.shields.io/badge/used%20by-130%2B%20repos-brightgreen.svg" alt="used by"></a>
+  <a href="https://libraries.io/npm/@kesha-antonov%2Freact-native-action-cable"><img src="https://img.shields.io/librariesio/dependent-repos/npm/@kesha-antonov%2Freact-native-action-cable?label=libraries.io%20repos" alt="dependent repos on libraries.io"></a>
   <a href="https://github.com/kesha-antonov/react-native-action-cable/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license"></a>
   <img src="https://img.shields.io/badge/platforms-iOS%20%7C%20Android%20%7C%20Web-lightgrey.svg" alt="platforms">
   <img src="https://img.shields.io/badge/TypeScript-supported-blue.svg" alt="TypeScript">
