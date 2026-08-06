@@ -1,6 +1,6 @@
 {
   "name": "@kesha-antonov/react-native-action-cable",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Use Rails ActionCable channels with React Native for real-time WebSocket communication.",
   "main": "index.ts",
   "types": "index.ts",

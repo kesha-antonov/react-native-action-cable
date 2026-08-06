@@ -1,5 +1,32 @@
 # Changelog
 
+## v3.0.1 (2026-08-06)
+
+No functional changes - `index.ts` and everything under `lib/` are untouched.
+This release is packaging and repository metadata.
+
+### 📦 Packaging
+
+- **`types` declared:** `package.json` now points `types` at the entry point. Type resolution already worked through `main`, since TypeScript falls back to the `.ts` source it names, but npm and the React Native Directory decide whether a package is typed from the `types` field - and both were reporting this one as untyped
+- **Author metadata fixed:** npm's `author` field takes a single person, so the previous comma-joined string was parsed down to its first entry and the current maintainer did not appear on the package page at all. The maintainer is now `author`, and the original author of [action-cable-react](https://github.com/schneidmaster/action-cable-react) moved to `contributors`, which is npm's field for this
+- **Keywords:** added `expo`, `websockets`, `chat`, `new-architecture`, `ruby-on-rails` and `actioncable-client`
+- Copyright extended through the present
+
+### 🔐 Supply Chain
+
+- Added a release workflow that publishes from GitHub Actions with `--provenance`, gated behind lint, typecheck and tests. Once an `NPM_TOKEN` secret is configured, published tarballs carry a signed, verifiable link back to the workflow run and commit that built them. This release predates that and was published manually, so it has no attestation
+
+### 📖 Documentation
+
+- Added `CONTRIBUTING.md` and `SECURITY.md`. Security reports now route to private GitHub advisories instead of public issues
+- Fixed the license badge, which linked to a `LICENSE.txt` that does not exist
+
+### 🧪 Tests
+
+- **Flaky end-to-end reconnect test:** the integration suite left the connection monitor's poll jitter live, so `getPollInterval()` returned anywhere from 6 s to 12 s while the test advanced a fixed 24 s and asserted the socket had reopened. Roughly one run in four failed. The jitter is now pinned with the same `Math.random` stub `connection_monitor.test.ts` already used. Test-only - the jitter itself is correct and matches Rails, and no shipped code changed
+
+---
+
 ## v3.0.0 (2026-08-05)
 
 ### ⚠️ Breaking Changes
