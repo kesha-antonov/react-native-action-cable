@@ -25,6 +25,11 @@ function letTheMonitorReconnect(): void {
 describe('ActionCable end to end', () => {
   beforeEach(() => {
     jest.useFakeTimers()
+    // The monitor jitters its poll interval by up to 100% on the first attempt,
+    // so without pinning the jitter `letTheMonitorReconnect` advances a fixed
+    // amount of time past a randomly placed poll and the reconnect assertions
+    // fail intermittently. Same stub as connection_monitor.test.ts.
+    jest.spyOn(Math, 'random').mockReturnValue(0)
     MockWebSocket.reset()
     ActionCable.WebSocket = MockWebSocket
     Object.keys(ActionCable._consumers).forEach(key => delete ActionCable._consumers[key])
@@ -33,6 +38,7 @@ describe('ActionCable end to end', () => {
   afterEach(() => {
     jest.clearAllTimers()
     jest.useRealTimers()
+    jest.restoreAllMocks()
   })
 
   function subscribe(channelParams: ChannelParams = { channel: 'ChatChannel', roomId: 1 }) {
