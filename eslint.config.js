@@ -6,6 +6,8 @@ module.exports = [
   {
     ignores: [
       '**/node_modules/**',
+      // The docs site is its own ESM project with its own toolchain.
+      'website/**',
       '**/dist/**',
       '**/build/**',
       '**/coverage/**',
