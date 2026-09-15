@@ -74,6 +74,11 @@ yarn add @kesha-antonov/react-native-action-cable
 npm install @kesha-antonov/react-native-action-cable
 ```
 
+The unscoped [`react-native-action-cable`](https://www.npmjs.com/package/react-native-action-cable)
+is an alias that re-exports this package in full and resolves to the latest
+release in the same major line. Use whichever name you prefer - the scoped one
+is the canonical package.
+
 ---
 
 ## 🚀 Quick Start
