@@ -50,6 +50,8 @@
 </tr>
 </table>
 
+<hr />
+
 ## ✨ Features
 
 - 🔌 **WebSocket Connection** - Automatic connection management with reconnection support
