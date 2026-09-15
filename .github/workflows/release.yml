@@ -30,6 +30,12 @@ jobs:
 
       - run: yarn install --immutable
 
+      # .nvmrc pins Node 24.3.0, which ships npm 11.4.2 - below the 11.5.1 that
+      # npm trusted publishing (OIDC) requires. Without this, npm silently falls
+      # back to token auth and the publish fails with a misleading E404.
+      - name: Use an npm that supports trusted publishing
+        run: npm install -g npm@^11.5.1
+
       - run: yarn lint
 
       - run: yarn typecheck
