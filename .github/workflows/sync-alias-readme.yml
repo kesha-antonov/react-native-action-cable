@@ -35,10 +35,6 @@ jobs:
           ref: alias-package
           path: alias-branch
 
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-
       - name: Sync
         run: node scripts/sync-alias-readme.mjs README.md alias-branch/alias/README.md
 
