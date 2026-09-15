@@ -1,0 +1,49 @@
+name: Release alias
+
+# The unscoped `react-native-action-cable` is a thin re-export of the scoped
+# package. It only needs republishing when its own version or dependency range
+# changes - normally once per major - so this runs on demand, never on a tag.
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish react-native-action-cable
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm provenance - lets the job mint the OIDC token that
+      # npm records as a signed, verifiable link back to this workflow run.
+      id-token: write
+
+    steps:
+      # The alias lives off master so GitHub's dependency graph keeps reading
+      # the scoped package as this repository's headline package.
+      - uses: actions/checkout@v5
+        with:
+          ref: alias-package
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Check the alias still tracks the current major
+        working-directory: alias
+        run: |
+          range=$(node -p "require('./package.json').dependencies['@kesha-antonov/react-native-action-cable']")
+          latest=$(npm view @kesha-antonov/react-native-action-cable version)
+          range_major=$(printf '%s' "$range" | grep -oE '[0-9]+' | head -1)
+          latest_major=$(printf '%s' "$latest" | grep -oE '[0-9]+' | head -1)
+          if [ "$range_major" != "$latest_major" ]; then
+            echo "alias depends on $range but the scoped package is at $latest" >&2
+            echo "bump alias/package.json on the alias-package branch first" >&2
+            exit 1
+          fi
+
+      - name: Publish
+        working-directory: alias
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
