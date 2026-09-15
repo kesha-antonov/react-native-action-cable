@@ -17,6 +17,10 @@
   Use Rails ActionCable channels with React Native for real-time WebSocket communication.
 </p>
 
+<p align="center">
+  <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
+</p>
+
 <hr />
 
 <table align="center">
