@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
+  <sub>Using it in production? A ⭐ helps other developers find the library. DRIFTED</sub>
 </p>
 
 <hr />
