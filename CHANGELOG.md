@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.0.2 (2026-09-15)
+
+Tracks `@kesha-antonov/react-native-action-cable@3.0.2`. No functional changes -
+this package is a re-export of the scoped one.
+
+### 📦 Packaging
+
+- **Documentation site:** [kesha-antonov.github.io/react-native-action-cable](https://kesha-antonov.github.io/react-native-action-cable/), generated from the README so the two cannot drift apart
+- **Releases publish from CI through npm trusted publishing.** The tarball now carries provenance - a signed, verifiable link back to the workflow run that built it - and there is no npm token stored in the repository to leak or rotate
+
 ## v3.0.1 (2026-08-06)
 
 No functional changes - `index.ts` and everything under `lib/` are untouched.
