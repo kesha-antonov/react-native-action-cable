@@ -17,6 +17,10 @@
   Use Rails ActionCable channels with React Native for real-time WebSocket communication.
 </p>
 
+<p align="center">
+  <sub>Maintained by <a href="https://github.com/kesha-antonov">Kesha Antonov</a>, who also builds <a href="https://cryptoc-app.web.app/"><strong>cryptoc</strong></a> - a crypto portfolio app with home screen and Watch widgets.</sub>
+</p>
+
 ---
 
 ## ✨ Features
@@ -347,6 +351,14 @@ yarn typecheck      # type-check the library and the tests
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+---
+
+## 👥 Author
+
+Maintained by [Kesha Antonov](https://github.com/kesha-antonov)
+
+I also build **[cryptoc](https://cryptoc-app.web.app/)** - a crypto portfolio app with home screen, lock screen and Watch widgets, no account and no exchange API keys.
 
 ---
 
