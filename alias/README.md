@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/TypeScript-supported-blue.svg" alt="TypeScript">
 </p>
 
+<!-- shared-header:start -->
 <h1 align="center">React Native ActionCable</h1>
 
 <p align="center">
@@ -59,6 +60,7 @@
 </table>
 
 <hr />
+<!-- shared-header:end -->
 
 > **Note**
 > This package is an alias for
