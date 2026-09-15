@@ -18,6 +18,14 @@
 </p>
 
 <p align="center">
+  <strong><a href="https://kesha-antonov.github.io/react-native-action-cable/">📖 Documentation</a></strong> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-action-cable/installation">Installation</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-action-cable/quick-start">Quick start</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-action-cable/api">API reference</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.github.io/react-native-action-cable/advanced">Advanced usage</a>
+</p>
+
+<p align="center">
   <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
 </p>
 
