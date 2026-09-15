@@ -39,6 +39,15 @@ jobs:
       # back to token auth and the publish fails with a misleading E404.
       - name: Use an npm that supports trusted publishing
         run: npm install -g npm@^11.5.1
+      # The shared header is written once on master; refuse to publish a copy
+      # that has drifted from it.
+      - name: Check the shared README header is in step
+        run: |
+          git fetch --depth=1 origin master
+          git show origin/master:README.md > /tmp/master-README.md
+          git show origin/master:scripts/sync-alias-readme.mjs > /tmp/sync-alias-readme.mjs
+          node /tmp/sync-alias-readme.mjs /tmp/master-README.md alias/README.md --check
+
       - name: Check the alias still tracks the current major
         working-directory: alias
         run: |

@@ -1,0 +1,56 @@
+name: Sync alias README
+
+# The unscoped alias package keeps its own README on the alias-package branch:
+# different badges above the shared header, a different body below it. Only the
+# marked shared region is copied, so the promo block, docs links and star ask
+# are written once on master and follow automatically.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - README.md
+      - scripts/sync-alias-readme.mjs
+      - .github/workflows/sync-alias-readme.yml
+  workflow_dispatch:
+
+concurrency:
+  group: sync-alias-readme
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Copy the shared header onto the alias branch
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check out the alias branch
+        uses: actions/checkout@v5
+        with:
+          ref: alias-package
+          path: alias-branch
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Sync
+        run: node scripts/sync-alias-readme.mjs README.md alias-branch/alias/README.md
+
+      - name: Commit if it changed
+        working-directory: alias-branch
+        run: |
+          if git diff --quiet -- alias/README.md; then
+            echo "alias README already in step, nothing to push"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add alias/README.md
+          git commit -m "docs(alias): sync the shared header from master"
+          git push origin HEAD:alias-package
