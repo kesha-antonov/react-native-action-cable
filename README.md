@@ -2,7 +2,7 @@
   <a href="https://github.com/kesha-antonov/react-native-action-cable/actions/workflows/ci.yml"><img src="https://github.com/kesha-antonov/react-native-action-cable/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://badge.fury.io/js/@kesha-antonov%2Freact-native-action-cable"><img src="https://badge.fury.io/js/@kesha-antonov%2Freact-native-action-cable.svg" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@kesha-antonov/react-native-action-cable"><img src="https://img.shields.io/npm/dm/@kesha-antonov/react-native-action-cable.svg" alt="npm downloads"></a>
-  <a href="https://npm-stat.com/charts.html?package=%40kesha-antonov%2Freact-native-action-cable&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-580k-blue.svg" alt="total npm downloads"></a>
+  <a href="https://npm-stat.com/charts.html?package=%40kesha-antonov%2Freact-native-action-cable&from=2015-01-01"><img src="https://img.shields.io/badge/total%20downloads-648k-blue.svg" alt="total npm downloads"></a>
   <a href="https://www.npmjs.com/package/@kesha-antonov/react-native-action-cable"><img src="https://img.shields.io/npm/dt/@kesha-antonov/react-native-action-cable.svg?label=18-months%20downloads" alt="npm downloads (last 18 months)"></a>
   <a href="https://github.com/kesha-antonov/react-native-action-cable/network/dependents"><img src="https://img.shields.io/badge/used%20by-130%2B%20repos-brightgreen.svg" alt="used by"></a>
   <a href="https://libraries.io/npm/@kesha-antonov%2Freact-native-action-cable"><img src="https://img.shields.io/librariesio/dependent-repos/npm/@kesha-antonov%2Freact-native-action-cable?label=libraries.io%20repos" alt="dependent repos on libraries.io"></a>
