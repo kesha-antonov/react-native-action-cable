@@ -23,6 +23,13 @@
 </p>
 
 <p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kesha-antonov/react-native-action-cable/master/docs/images/how-chat-works-dark.gif" />
+    <img src="https://raw.githubusercontent.com/kesha-antonov/react-native-action-cable/master/docs/images/how-chat-works-light.gif" width="800" alt="A chat on an iPhone: the app subscribes to ChatChannel, a typing event shows the dots, the message arrives, a reply is sent with perform, and after the app comes back from the background it reconnects on its own and fetches the message it missed" />
+  </picture>
+</p>
+
+<p align="center">
   <sub>Using it in production? A ⭐ helps other developers find the library.</sub>
 </p>
 
