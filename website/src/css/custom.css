@@ -27,3 +27,12 @@
   overflow-x: auto;
   max-width: 100%;
 }
+
+/* The chat animation on the intro page */
+.chat-demo {
+  margin: 0 0 2rem;
+}
+
+.chat-demo__placeholder {
+  aspect-ratio: 800 / 480;
+}

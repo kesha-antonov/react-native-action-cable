@@ -1,0 +1,401 @@
+/* react-native-action-cable: a chat on an iPhone with Messages' conventions,
+   and the calls that carry it listed beside the phone. Everything is nested
+   under .ac. Inside the phone, 1px is 1pt. */
+.ac {
+  --ac-accent: #0a84ff;
+  --ac-ui: cubic-bezier(0.3, 0.75, 0.1, 1);
+  --gutter: 40px;
+
+  .ss-stage {
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--ss-well);
+  }
+
+  /* ---- The phone: off the top, the composer and the newest messages in
+     view, a gutter from the right and the bottom ---- */
+  .ac-phone {
+    position: absolute;
+    right: var(--gutter);
+    bottom: var(--gutter);
+  }
+
+  .ss-stage[data-layout='compact'] .ac-phone {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .ss-phone__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The lock screen sits under the app and shows when the app goes away */
+  .ac-lock {
+    transition:
+      opacity 0.18s ease,
+      transform 0.45s var(--ac-ui);
+  }
+
+  .ac-lock[data-away] {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  /* The app over the lock screen, shrinking away to the background */
+  .ac-app {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 62px;
+    border-radius: inherit;
+    background: #fff;
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity 0.22s ease,
+      transform 0.5s var(--ac-ui);
+  }
+
+  .ac-app[data-on] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ss-stage[data-theme='dark'] .ac-app {
+    background: #000;
+  }
+
+  .ac-thread {
+    flex: 1;
+    padding: 0 16px 10px;
+  }
+
+  /* ---- The connection pill, at the top of what the crop leaves in view ---- */
+  .ac-pill {
+    position: absolute;
+    top: var(--ac-pill-top, 362px);
+    left: 50%;
+    z-index: 2;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 6px 18px rgba(0, 0, 0, 0.12);
+    color: #000;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.96);
+    transition:
+      opacity 0.2s ease,
+      transform 0.4s var(--ac-ui);
+  }
+
+  .ss-stage[data-layout='compact'] .ac-pill {
+    top: 300px;
+  }
+
+  .ac-pill[data-show] {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .ss-stage[data-theme='dark'] .ac-pill {
+    background: #1c1c1e;
+    box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 6px 18px rgba(0, 0, 0, 0.5);
+    color: #fff;
+  }
+
+  .ac-pill__state {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ac-pill__spin {
+    color: #8e8e93;
+    animation: ac-spin 0.9s linear infinite;
+  }
+
+  .ac-pill__dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin: 2px;
+    border-radius: 50%;
+    background: #34c759;
+  }
+
+  /* ---- The composer: a round plus, then the field ---- */
+  .ac-compose {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 14px 40px;
+  }
+
+  .ac-plus {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e9e9eb;
+    color: #3c3c43;
+  }
+
+  .ac-field {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    min-height: 36px;
+    padding: 0 4px 0 14px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #d1d1d6;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+  }
+
+  .ac-field__text {
+    flex: 1;
+    min-width: 0;
+    color: #000;
+    white-space: nowrap;
+  }
+
+  .ss-stage[data-theme='dark'] {
+    .ac-plus {
+      background: #2c2c2e;
+      color: #ebebf5;
+    }
+
+    .ac-field {
+      background: #000;
+      box-shadow: inset 0 0 0 1px #3a3a3c;
+    }
+
+    .ac-field__text {
+      color: #fff;
+    }
+  }
+
+  .ac-caret {
+    display: inline-block;
+    width: 2px;
+    height: 20px;
+    margin-left: 1px;
+    border-radius: 1px;
+    background: var(--ac-accent);
+    vertical-align: -4px;
+  }
+
+  .ac-field__ph {
+    position: absolute;
+    left: 14px;
+    color: #b0b0b5;
+    pointer-events: none;
+  }
+
+  .ac-field__ph[data-hide] {
+    opacity: 0;
+  }
+
+  .ac-send {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ac-accent);
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.5);
+    transition:
+      scale 0.12s ease,
+      opacity 0.18s ease,
+      transform 0.25s var(--ac-ui);
+  }
+
+  .ac-send[data-show] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ac-send[data-pressed] {
+    scale: 0.9;
+  }
+
+  /* ---- The calls, listed beside the phone ---- */
+  .ac-features {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--gutter) - 12px);
+    display: grid;
+    gap: 2px;
+    width: 360px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform: translateY(-50%);
+  }
+
+  .ac-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 14px;
+    transition:
+      background-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .ac-feature[data-state='on'] {
+    background: var(--ss-surface);
+    box-shadow: var(--ss-shadow-card);
+  }
+
+  .ac-feature__tile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--ss-line);
+    color: var(--ss-text);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  .ac-feature[data-state='done'] .ac-feature__tile {
+    background: color-mix(in srgb, var(--ac-accent) 14%, transparent);
+    color: var(--ac-accent);
+  }
+
+  .ac-feature[data-state='on'] .ac-feature__tile {
+    background: var(--ac-accent);
+    color: #fff;
+  }
+
+  .ac-feature__words {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ac-feature__title {
+    color: var(--ss-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    transition: color 0.3s ease;
+  }
+
+  .ac-feature__code {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ss-text-faint);
+    font: 12px/16px ui-monospace, 'SF Mono', Menlo, monospace;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+  }
+
+  .ac-feature[data-state='on'] .ac-feature__title,
+  .ac-feature[data-state='done'] .ac-feature__title {
+    color: var(--ss-text-strong);
+  }
+
+  .ac-feature[data-state='on'] .ac-feature__code,
+  .ac-feature[data-state='done'] .ac-feature__code {
+    color: var(--ss-text);
+  }
+
+  .ac-more {
+    margin: 8px 12px 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--ss-line);
+    color: var(--ss-text);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  /* ---- Compact: the call in play as a caption at the top ---- */
+  .ac-caption {
+    position: absolute;
+    top: 16px;
+    left: 32px;
+    right: 32px;
+    z-index: 4;
+    display: grid;
+    padding: 10px 16px;
+    border-radius: 16px;
+    background: var(--ss-surface);
+    box-shadow: var(--ss-shadow-card);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.4s var(--ac-ui);
+  }
+
+  .ac-caption[data-show] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ac-caption__item {
+    display: grid;
+    grid-area: 1 / 1;
+    justify-items: start;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+
+  .ac-caption__item[data-on] {
+    opacity: 1;
+    transition: opacity 0.25s ease 0.14s;
+  }
+
+  .ac-caption__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ss-text-strong);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+
+    svg {
+      color: var(--ac-accent);
+    }
+  }
+
+  .ac-caption__code {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ss-text);
+    font: 12px/16px ui-monospace, 'SF Mono', Menlo, monospace;
+    white-space: nowrap;
+  }
+}
+
+@keyframes ac-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
