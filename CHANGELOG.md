@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.0.3 (2026-11-06)
+
+No functional changes - `index.ts` and everything under `lib/` are untouched.
+
+### Documentation
+
+- **How a chat runs on it, animated:** the README and the [documentation site](https://kesha-antonov.github.io/react-native-action-cable/) open with a chat on an iPhone beside the calls that carry it - subscribing, a custom `typing` event, a received message, a reply sent with `perform`, and a reconnect after the app comes back from the background, where `connected({ reconnected: true })` tells the app to fetch what it missed
+- The Features list now names custom action events and the `reconnected` flag
+
 ## v3.0.2 (2026-09-15)
 
 No functional changes - `index.ts` and everything under `lib/` are untouched.
