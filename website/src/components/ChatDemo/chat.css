@@ -110,24 +110,57 @@
     color: #fff;
   }
 
-  .ac-pill__state {
+  /* The pill's own layout: the ring, then the label */
+  .ac-pill {
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  .ac-pill__spin {
-    color: #8e8e93;
+  .ac-ring {
+    flex: none;
+    overflow: visible;
+  }
+
+  .ac-ring__track,
+  .ac-ring__arc {
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  .ac-ring__track {
+    stroke: #8e8e93;
+    stroke-opacity: 0.25;
+  }
+
+  .ac-ring__spin {
+    transform-origin: 8px 8px;
     animation: ac-spin 0.9s linear infinite;
   }
 
-  .ac-pill__dot {
-    flex: none;
-    width: 10px;
-    height: 10px;
-    margin: 2px;
-    border-radius: 50%;
-    background: #34c759;
+  .ac-ring__arc {
+    stroke: #8e8e93;
+    stroke-linecap: round;
+    stroke-dasharray: 0.25 1;
+    transition:
+      stroke-dasharray 0.4s var(--ac-ui),
+      stroke 0.3s ease;
+  }
+
+  .ac-ring[data-on] .ac-ring__arc {
+    stroke: #34c759;
+    stroke-dasharray: 1 0;
+  }
+
+  .ac-ring__fill {
+    fill: #34c759;
+    transform-origin: 8px 8px;
+    transform: scale(0);
+    transition: transform 0.35s var(--ac-ui) 0.25s;
+  }
+
+  .ac-ring[data-on] .ac-ring__fill {
+    transform: none;
   }
 
   /* ---- The composer: a round plus, then the field ---- */

@@ -1,5 +1,5 @@
 import { MessageSquareMore, Plug, RefreshCw, Send, Inbox } from 'lucide-react'
-import { Bubble, LockScreen, Phone, Receipt, Spinner, Stage, Stamp, States, Thread, WALLPAPER, type Act } from '../stageshow/kit'
+import { Bubble, LockScreen, Phone, Receipt, Stage, Stamp, States, Thread, WALLPAPER, type Act } from '../stageshow/kit'
 import './chat.css'
 
 // How @kesha-antonov/react-native-action-cable carries a chat, told on one
@@ -112,23 +112,25 @@ async function script(a: Act<S>) {
 }
 
 function Pill({ s }: { s: S }) {
+  const on = s.link === 'connected'
   return (
     <div className="ac-pill" data-show={s.pill || undefined} aria-hidden>
+      {/* One mark from waiting to connected: the spinning arc closes into a
+          full ring and the ring fills, both in green. Spinning goes on, which
+          a full ring doesn't show, so nothing snaps when it lands */}
+      <svg className="ac-ring" data-on={on || undefined} viewBox="0 0 16 16" width="14" height="14">
+        <circle className="ac-ring__track" cx="8" cy="8" r="6.25" />
+        <g className="ac-ring__spin">
+          <circle className="ac-ring__arc" cx="8" cy="8" r="6.25" pathLength={1} />
+        </g>
+        <circle className="ac-ring__fill" cx="8" cy="8" r="6.25" />
+      </svg>
       <States
-        value={s.link === 'connected' ? 'on' : 'wait'}
+        value={on ? 'on' : 'wait'}
+        align="start"
         states={{
-          wait: (
-            <span className="ac-pill__state">
-              <Spinner size={14} className="ac-pill__spin" />
-              Connecting
-            </span>
-          ),
-          on: (
-            <span className="ac-pill__state">
-              <span className="ac-pill__dot" />
-              Connected
-            </span>
-          ),
+          wait: 'Connecting',
+          on: 'Connected',
         }}
       />
     </div>
