@@ -9,7 +9,7 @@ const config = {
   title: 'React Native ActionCable',
   tagline: 'Rails ActionCable channels over WebSocket in React Native, with no document polyfills',
 
-  url: 'https://kesha-antonov.github.io',
+  url: 'https://kesha-antonov.com',
   baseUrl: '/react-native-action-cable/',
   organizationName: 'kesha-antonov',
   projectName: 'react-native-action-cable',
