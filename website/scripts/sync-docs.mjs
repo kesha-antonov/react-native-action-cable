@@ -37,22 +37,26 @@ const PAGES = [
       "Use Rails ActionCable channels from React Native over WebSocket, with AppState-driven reconnects and no window or document polyfills.",
     keywords: ["rails actioncable react native", "react native websocket rails"],
     sections: ["✨ Features"],
+    headTitle: "Rails ActionCable for React Native - WebSocket Channels",
+    lead: true,
+    install: "📦 Installation",
   },
   {
     id: "installation",
     title: "Installation",
     sidebarLabel: "Installation",
     description:
-      "Install the package and wire it into a React Native or Expo app.",
+      "Install @kesha-antonov/react-native-action-cable with Yarn or npm. The unscoped react-native-action-cable package is an alias that re-exports it in full.",
     keywords: ["react-native-action-cable install"],
     sections: ["📦 Installation"],
+    excerpts: [{ section: "🚀 Quick Start", heading: "1. Create a consumer", title: "Create a consumer", next: "quick-start" }],
   },
   {
     id: "quick-start",
     title: "Quick start",
     sidebarLabel: "Quick start",
     description:
-      "Open a connection, subscribe to a channel and handle incoming messages.",
+      "Connect React Native to Rails ActionCable in four steps: create a consumer, subscribe to a channel, send messages with perform and unsubscribe on cleanup.",
     keywords: ["actioncable subscribe react native"],
     sections: ["🚀 Quick Start"],
   },
@@ -61,7 +65,7 @@ const PAGES = [
     title: "API reference",
     sidebarLabel: "API reference",
     description:
-      "ActionCable, Cable and Channel - every method and event.",
+      "API reference for React Native ActionCable: createConsumer and getOrCreateConsumer, consumer and Cable methods, Channel events, perform and unsubscribe.",
     keywords: ["actioncable api react native"],
     sections: ["📚 API Reference"],
   },
@@ -70,7 +74,7 @@ const PAGES = [
     title: "Advanced usage",
     sidebarLabel: "Advanced usage",
     description:
-      "Authentication headers, custom WebSocket implementations, reconnect behaviour and Blob handling.",
+      "Authentication headers, reusing one connection across hot reloads, error handling, a React hook, Rails style channel mixins and custom action events.",
     keywords: ["actioncable auth headers", "actioncable reconnect"],
     sections: ["⚙️ Advanced Usage"],
   },
@@ -79,7 +83,7 @@ const PAGES = [
     title: "Testing",
     sidebarLabel: "Testing",
     description:
-      "Test channels and connection handling without a live Rails server.",
+      "Mock @kesha-antonov/react-native-action-cable in Jest to test components without a live Rails server, and run the library's own Jest suite and type check.",
     keywords: ["actioncable testing react native"],
     sections: ["🧪 Testing"],
   },
@@ -88,16 +92,17 @@ const PAGES = [
     title: "Examples",
     sidebarLabel: "Examples",
     description:
-      "Complete worked examples.",
+      "Example projects for React Native ActionCable: a complete chat app with a Rails backend, Apollo GraphQL subscriptions, and Jest mocks and testing patterns.",
     keywords: ["actioncable example"],
     sections: ["📂 Examples"],
+    exampleReadmes: ["examples/complete-chat-app", "examples/apollo-graphql", "examples/testing"],
   },
   {
     id: "contributing",
     title: "Contributing and credits",
     sidebarLabel: "Contributing",
     description:
-      "How to propose a change, and what this library is based on.",
+      "How to contribute to React Native ActionCable with a pull request, and its origins in action-cable-react and the Rails ActionCable JavaScript client.",
     keywords: ["contributing"],
     sections: ["🤝 Contributing", "👏 Credits"],
   },
@@ -243,7 +248,11 @@ function rewriteLinks (markdown, pageId) {
   // GitHub instead of letting them resolve to a 404 inside the docs site.
   out = out.replace(/\]\(\.?\/?(LICENSE|CHANGELOG\.md|llms\.txt|[A-Z][A-Z_]+(?:\.[a-z]+)?)\)/g, `](${REPO}/blob/${BRANCH}/$1)`)
   out = out.replace(/\]\(\.?\/?(examples?|src|scripts|docs|__tests__)\/?\)/g, `](${REPO}/tree/${BRANCH}/$1)`)
-  out = out.replace(/\]\(\.?\/?((?:examples?|src|scripts|docs|__tests__)\/[^)\s]+)\)/g, `](${REPO}/blob/${BRANCH}/$1)`)
+  out = out.replace(/\]\(\.?\/?((?:examples?|src|scripts|docs|__tests__)\/[^)\s]+)\)/g, (_match, path) => {
+    // A path without a file extension is a folder, which GitHub serves under tree/.
+    const kind = /\.[A-Za-z0-9]+$/.test(path) ? 'blob' : 'tree'
+    return `](${REPO}/${kind}/${BRANCH}/${path})`
+  })
 
   // Root-level markdown with no page of its own (AGENTS.md, MIGRATION.md, ...).
   // Links the generator itself produced point at a page id and are left alone.
@@ -264,10 +273,105 @@ function frontmatter (page, index) {
     `description: ${JSON.stringify(page.description)}`,
   ]
   if (page.slug) fields.push(`slug: ${JSON.stringify(page.slug)}`)
+  // A browser title that differs from the heading. The frontmatter title stays
+  // the visible h1, and src/theme/MDXContent puts this one into <title>.
+  if (page.headTitle) fields.push(`head_title: ${JSON.stringify(page.headTitle)}`)
   if (page.keywords?.length) fields.push(`keywords: [${page.keywords.map((k) => JSON.stringify(k)).join(', ')}]`)
   return `---\n${fields.join('\n')}\n---\n`
 }
 
+/** The one-sentence summary that sits under the title in the README header. */
+function readmeLead (markdown) {
+  const m = /<h1[^>]*>[^<]*<\/h1>\s*<p[^>]*>\s*([^<]+?)\s*<\/p>/.exec(markdown)
+  if (!m) throw new Error('README summary paragraph not found. Update website/scripts/sync-docs.mjs.')
+  return m[1].replace(/\s+/g, ' ')
+}
+
+function sectionLines (title) {
+  const section = readmeSections.get(title)
+  if (!section) throw new Error(`README section not found: "${title}". Update website/scripts/sync-docs.mjs.`)
+  return section.lines
+}
+
+/** Fenced code blocks of a README section, each returned with its fences. */
+function codeBlocksIn (title) {
+  const blocks = []
+  let block = null
+  for (const line of sectionLines(title)) {
+    const fence = /^\s*(```|~~~)/.test(line)
+    if (fence && !block) {
+      block = [line]
+      continue
+    }
+    if (block) block.push(line)
+    if (fence) {
+      blocks.push(block.join('\n'))
+      block = null
+    }
+  }
+  return blocks
+}
+
+/** The body of one subsection of a README section, without its heading. */
+function subsection (title, heading) {
+  const found = []
+  let inside = false
+  let fenced = false
+  for (const line of sectionLines(title)) {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced
+    const m = !fenced && /^#{3,6} (.+?)\s*$/.exec(line)
+    if (m) {
+      if (inside) break
+      inside = m[1] === heading
+      continue
+    }
+    if (inside) found.push(line)
+  }
+  if (!found.length) throw new Error(`README subsection not found: "${heading}". Update website/scripts/sync-docs.mjs.`)
+  return found.join('\n').trim()
+}
+
+/**
+ * Parts of the README that a page repeats from a section owned by another
+ * page: the summary and install commands on the landing page, a first snippet
+ * on the installation page. They are added after the anchor map is built, so
+ * links keep pointing at the page that owns the section.
+ */
+function extras (page) {
+  const before = []
+  const after = []
+
+  if (page.lead) before.push(readmeLead(readme))
+
+  if (page.install) {
+    const target = PAGES.find((other) => other.id === 'installation')
+    after.push(`## ${target.title} {#install}\n\n${codeBlocksIn(page.install).join('\n\n')}\n\nMore in [${target.title}](./${target.id}.md).`)
+  }
+
+  for (const excerpt of page.excerpts ?? []) {
+    const next = PAGES.find((other) => other.id === excerpt.next)
+    const more = next ? `\n\nContinue with [${next.title}](./${next.id}.md).` : ''
+    after.push(`## ${excerpt.title} {#${key(excerpt.title)}}\n\n${subsection(excerpt.section, excerpt.heading)}${more}`)
+  }
+
+  for (const dir of page.exampleReadmes ?? []) {
+    const { title, summary } = exampleSummary(dir)
+    after.push(`## ${title} {#${key(title)}}\n\n${summary}\n\n[\`${dir}\`](${REPO}/tree/${BRANCH}/${dir})`)
+  }
+  return { before, after }
+}
+
+/** The title and opening paragraph of an example's own README. */
+function exampleSummary (dir) {
+  const text = read(`${dir}/README.md`)
+  const title = /^# (.+?)\s*$/m.exec(text)
+  const summary = text
+    .split(/\n\s*\n/)
+    .map((chunk) => chunk.trim())
+    .find((chunk) => chunk && !chunk.startsWith('#'))
+  if (!title || !summary) throw new Error(`No title or opening paragraph in ${dir}/README.md.`)
+  return { title: title[1], summary: summary.replace(/\s+/g, ' ') }
+}
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(OUT, { recursive: true })
 
@@ -284,6 +388,13 @@ PAGES.forEach((page, index) => {
   }
 
   body = normaliseHeadings(body, depth)
+
+  const { before, after } = extras(page)
+  // A README section can end with a horizontal rule, which would otherwise sit
+  // between it and the parts added below.
+  if (after.length) body = body.trim().replace(/\n---$/, '')
+  body = [...before, body.trim(), ...after].join('\n\n')
+
   body = rewriteLinks(body, page.id)
 
   const source = page.file ?? 'README.md'
