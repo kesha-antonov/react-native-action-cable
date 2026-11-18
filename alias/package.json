@@ -1,6 +1,6 @@
 {
   "name": "react-native-action-cable",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Use Rails ActionCable channels with React Native for real-time WebSocket communication.",
   "main": "index.ts",
   "types": "index.ts",
@@ -25,7 +25,7 @@
     "new-architecture",
     "typescript"
   ],
-  "author": "Kesha Antonov <innokenty.longway@gmail.com>",
+  "author": "Kesha Antonov <keshagoodvibes@gmail.com> (https://kesha-antonov.com)",
   "contributors": [
     "Zach Schneider <zach@schneid.io>"
   ],
@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/kesha-antonov/react-native-action-cable/issues"
   },
-  "homepage": "https://github.com/kesha-antonov/react-native-action-cable#readme",
+  "homepage": "https://kesha-antonov.com/react-native-action-cable/",
   "dependencies": {
     "@kesha-antonov/react-native-action-cable": "^3.0.1"
   },
