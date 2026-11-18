@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://kesha-antonov.com/react-native-action-cable/">📖 Documentation</a></strong> &nbsp;·&nbsp;
+  <strong><a href="https://kesha-antonov.com/react-native-action-cable">📖 Documentation</a></strong> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-action-cable/installation">Installation</a> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-action-cable/quick-start">Quick start</a> &nbsp;·&nbsp;
   <a href="https://kesha-antonov.com/react-native-action-cable/api">API reference</a> &nbsp;·&nbsp;
