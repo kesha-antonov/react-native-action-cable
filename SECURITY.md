@@ -17,7 +17,7 @@ Please do not open a public issue for a security problem.
 Report it privately through
 [GitHub Security Advisories](https://github.com/kesha-antonov/react-native-action-cable/security/advisories/new),
 which lets us discuss and fix the issue before it is disclosed. If that is not
-an option for you, email <innokenty.longway@gmail.com>.
+an option for you, email <keshagoodvibes@gmail.com>.
 
 Useful things to include: the affected version, what an attacker can do, and a
 reproduction if you have one.
