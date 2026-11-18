@@ -53,7 +53,7 @@
   "bugs": {
     "url": "https://github.com/kesha-antonov/react-native-action-cable/issues"
   },
-  "homepage": "https://kesha-antonov.com/react-native-action-cable/",
+  "homepage": "https://kesha-antonov.com/react-native-action-cable",
   "devDependencies": {
     "@jest/globals": "^30.4.1",
     "@stylistic/eslint-plugin": "^4.2.0",
