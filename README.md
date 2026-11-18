@@ -19,15 +19,15 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://kesha-antonov.github.io/react-native-action-cable/">📖 Documentation</a></strong> &nbsp;·&nbsp;
-  <a href="https://kesha-antonov.github.io/react-native-action-cable/installation">Installation</a> &nbsp;·&nbsp;
-  <a href="https://kesha-antonov.github.io/react-native-action-cable/quick-start">Quick start</a> &nbsp;·&nbsp;
-  <a href="https://kesha-antonov.github.io/react-native-action-cable/api">API reference</a> &nbsp;·&nbsp;
-  <a href="https://kesha-antonov.github.io/react-native-action-cable/advanced">Advanced usage</a>
+  <strong><a href="https://kesha-antonov.com/react-native-action-cable/">📖 Documentation</a></strong> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.com/react-native-action-cable/installation">Installation</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.com/react-native-action-cable/quick-start">Quick start</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.com/react-native-action-cable/api">API reference</a> &nbsp;·&nbsp;
+  <a href="https://kesha-antonov.com/react-native-action-cable/advanced">Advanced usage</a>
 </p>
 
 <p align="center">
-  <sub>Built and maintained by <a href="https://kesha-antonov.com">Kesha Antonov</a>, React Native lead engineer. More libraries, apps and case studies on <a href="https://kesha-antonov.com">kesha-antonov.com</a>.</sub>
+  <sub>Built and maintained by <a href="https://kesha-antonov.com">Kesha Antonov</a>, React Native lead engineer, <a href="https://kesha-antonov.com/react-native-developer/">available for hire</a>. More libraries, apps and case studies on <a href="https://kesha-antonov.com">kesha-antonov.com</a>.</sub>
 </p>
 
 <p align="center">
