@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/kesha-antonov/react-native-action-cable/issues"
   },
-  "homepage": "https://kesha-antonov.com/react-native-action-cable/",
+  "homepage": "https://kesha-antonov.com/react-native-action-cable",
   "dependencies": {
     "@kesha-antonov/react-native-action-cable": "^3.0.1"
   },
