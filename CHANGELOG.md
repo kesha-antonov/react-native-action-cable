@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.0.5 (2026-11-18)
+
+No functional changes - `index.ts` and everything under `lib/` are untouched.
+
+### 📖 Documentation
+
+- The author line links to the hire page at its new address, without a trailing slash
+
 ## v3.0.4 (2026-11-18)
 
 No functional changes - `index.ts` and everything under `lib/` are untouched.
