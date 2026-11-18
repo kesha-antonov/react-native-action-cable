@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.0.6 (2026-11-18)
+
+No changes to the library code. This release updates the README shown on npm.
+
+### 📖 Documentation
+
+- The README and the package homepage link the docs site without a trailing slash
+
 ## v3.0.5 (2026-11-18)
 
 No functional changes - `index.ts` and everything under `lib/` are untouched.
