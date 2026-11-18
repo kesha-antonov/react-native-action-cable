@@ -1,15 +1,22 @@
 name: Release alias
 
 # The unscoped `react-native-action-cable` is a thin re-export of the scoped
-# package. It only needs republishing when its own version or dependency range
-# changes - normally once per major - so this runs on demand, never on a tag.
+# package. Every release of the scoped package republishes it under the same
+# version, so its README and metadata on npm never fall behind. A manual run
+# publishes the version written in alias/package.json on the alias-package
+# branch: that is the path after a hand edit, such as a new dependency range
+# for a new major.
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
   publish:
     name: Publish react-native-action-cable
     runs-on: ubuntu-latest
+    # A prerelease of the scoped package does not move the alias.
+    if: github.event_name != 'release' || !github.event.release.prerelease
 
     permissions:
       contents: read
@@ -61,9 +68,35 @@ jobs:
             exit 1
           fi
 
+      # The version is set for this run only and is not committed: the branch
+      # keeps the last version written by hand, which a manual run publishes.
+      - name: Take the version of the release
+        if: github.event_name == 'release'
+        working-directory: alias
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="${TAG#v}"
+          if ! printf '%s' "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "release tag $TAG is not a plain version, the alias is not published" >&2
+            exit 1
+          fi
+          npm version "$version" --no-git-tag-version --allow-same-version
+
+      - name: Check whether this version is already on npm
+        id: npm
+        working-directory: alias
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "react-native-action-cable@$version" version >/dev/null 2>&1; then
+            echo "react-native-action-cable@$version is already on npm, nothing to publish"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       # Authenticated by npm trusted publishing: the id-token permission above
       # lets npm exchange this run's OIDC token for a short-lived credential,
       # so there is no NPM_TOKEN secret to store, leak or rotate.
       - name: Publish
+        if: steps.npm.outputs.exists != 'true'
         working-directory: alias
         run: npm publish --provenance --access public
