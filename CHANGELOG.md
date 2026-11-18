@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.0.4 (2026-11-18)
+
+No functional changes - `index.ts` and everything under `lib/` are untouched.
+
+### 📖 Documentation
+
+- README documentation links go straight to kesha-antonov.com, and the package homepage on npm is the documentation site
+- The author line links to the author's site, and the app block is gone from the README
+
 ## v3.0.3 (2026-11-06)
 
 No functional changes - `index.ts` and everything under `lib/` are untouched.
