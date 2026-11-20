@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.1.0 (2026-11-20)
+
+No changes to the library code. This release updates the README shown on npm.
+
+### Documentation
+
+- The Stream sponsor block and its logo are removed from the README
+
 ## v3.0.6 (2026-11-18)
 
 No changes to the library code. This release updates the README shown on npm.
